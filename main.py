@@ -1,26 +1,42 @@
+import time
 from cmu_graphics import *
 from map import Map
 
+
+
+
 def onAppStart(app):
     app.map = Map()
-    app.viewX = 0
-    app.viewY = 0
+    app.map.createStart() #different maps have different difficulties
+    app.stepsPerSecond = 10
     app.paused = True
+    app.startTime = time.time()
+    app.stepInterval = 1/app.stepsPerSecond
+    app.generateInterval = 2
+
 
 def redrawAll(app):
-    app.map.drawMap(app.viewX, app.viewY)
-    pass
+    obstacles = app.map.obstacleList
+    for obstacle in obstacles:
+        obstacle.drawObstacle(app.map.canvas)
+    
 
 def onKeyPress(app, key):
-    if key == 'right':
-        takeStep(app)
+    pass
 
 def onStep(app):
-    if not app.paused:
-        takeStep(app)
+    takeStep(app)
 
 def takeStep(app):
-    app.viewX += 10
+    currentTime = time.time()
+    obstacles = app.map.obstacleList
+    for obstacle in obstacles:
+        obstacle.xCoordinate -= 10
+    #print(pythonRound(currentTime-app.startTime, 1)%app.generateInterval)
+    if pythonRound(currentTime-app.startTime, 1)%app.generateInterval == 0.0: #create an obstacle right outside the canvas
+        #print(app.map.canvas.canvasWidth)
+        app.map.createObstacle(app.map.canvas.canvasWidth)
+    
 
 def main():
     runApp()
