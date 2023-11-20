@@ -2,10 +2,10 @@ from cmu_graphics import *
 import random
 
 class GamePlatform:
-    def __init__(self, map, xCoord):
+    def __init__(self, map, xCoord, yCoord):
         self.map = map
         self.xCoord = xCoord
-        self.yCoord = self.map.canvas.canvasHeight - random.randint(100, 150) #random height between 100-150
+        self.yCoord = yCoord - random.randint(100, 150) #random height between 100-150
         self.platform = self.createPlatform()
     
     def createPlatform(self):
