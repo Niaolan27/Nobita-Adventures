@@ -7,18 +7,20 @@ from map import Map
 
 def onAppStart(app):
     app.map = Map()
-    app.map.createStart() #different maps have different difficulties
-    app.stepsPerSecond = 10
+    app.stepsPerSecond = 30
     app.paused = True
     app.startTime = time.time()
     app.stepInterval = 1/app.stepsPerSecond
-    app.generateInterval = 2
+    #app.generateInterval = 2
 
 
 def redrawAll(app):
     obstacles = app.map.obstacleList
+    platforms = app.map.platformList
     for obstacle in obstacles:
-        obstacle.drawObstacle(app.map.canvas)
+        obstacle.drawObstacle()
+    for platform in platforms:
+        platform.drawPlatform()
     
 
 def onKeyPress(app, key):
@@ -28,14 +30,17 @@ def onStep(app):
     takeStep(app)
 
 def takeStep(app):
-    currentTime = time.time()
+    #currentTime = time.time()
     obstacles = app.map.obstacleList
+    platforms = app.map.platformList
     for obstacle in obstacles:
-        obstacle.xCoordinate -= 10
+        obstacle.updateXCoord(-10)
+    for platform in platforms:
+        platform.updateXCoord(-10)
     #print(pythonRound(currentTime-app.startTime, 1)%app.generateInterval)
-    if pythonRound(currentTime-app.startTime, 1)%app.generateInterval == 0.0: #create an obstacle right outside the canvas
-        #print(app.map.canvas.canvasWidth)
-        app.map.createObstacle(app.map.canvas.canvasWidth)
+    # if pythonRound(currentTime-app.startTime, 1)%app.generateInterval == 0.0: #create an obstacle right outside the canvas
+    #     #print(app.map.canvas.canvasWidth)
+    #     app.map.createObstacle(app.map.canvas.canvasWidth)
     
 
 def main():
