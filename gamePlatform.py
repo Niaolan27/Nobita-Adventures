@@ -5,12 +5,12 @@ class GamePlatform:
     def __init__(self, map, xCoord):
         self.map = map
         self.xCoord = xCoord
-        self.yCoord = self.map.canvas.canvasHeight - 100
+        self.yCoord = self.map.canvas.canvasHeight - random.randint(100, 150) #random height between 100-150
         self.platform = self.createPlatform()
     
     def createPlatform(self):
         platform = []
-        numTiles = random.randint(1,5)
+        numTiles = random.randint(1,5) #random length of platform between 1-5 tiles
         for i in range(numTiles):
             xCoord = self.xCoord + i*Tile.width
             yCoord = self.yCoord
