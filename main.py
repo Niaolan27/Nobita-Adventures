@@ -11,15 +11,17 @@ def onAppStart(app):
     app.paused = True
     app.startTime = time.time()
     app.stepInterval = 1/app.stepsPerSecond
+    app.width = 600
+    app.height = 400
     #app.generateInterval = 2
 
 
 def redrawAll(app):
     obstacles = app.map.obstacleList
     platforms = app.map.platformList
-    for obstacle in obstacles:
+    for obstacle in obstacles: #draws each obstacle
         obstacle.drawObstacle()
-    for platform in platforms:
+    for platform in platforms: #draws each platform
         platform.drawPlatform()
     
 
