@@ -11,6 +11,7 @@ class Square:
         self.yCoord = yCoord
 
     def draw(self):
+        #print(self.xCoord, self.yCoord)
         drawRect(self.xCoord, self.yCoord - self.height, self.width, self.height, fill = 'red', border='black')
 
 class Spike:

@@ -17,23 +17,6 @@ class Map:
         self.createTerrain(start=True)
         self.createObstacle(start=True)
         self.createPlatform(start=True)
-
-        # #creates obstacles
-        # for index in range(self.numberObstacles):
-        #     obstacleXMin = index*self.obstacleInterval 
-        #     obstacleXMax = obstacleXMin + self.obstacleInterval
-        #     obstacleXCoord = random.randint(obstacleXMin, obstacleXMax)
-        #     #check through the terrain and check what is the yCoord of the terrain at that xCoord
-        #     obstacleYCoord = self.terrain.findYCoord(obstacleXCoord) #yCoord of the surface of the terrain
-        #     if obstacleYCoord == None: raise ValueError('No Y Coordinate found for terrain')
-        #     self.createObstacle(obstacleXCoord, obstacleYCoord)
-        # #creates platforms
-        # for index in range(self.numberPlatforms):
-        #     platformXMin = index*self.platformInterval 
-        #     platformXMax = platformXMin + self.platformInterval
-        #     platformXCoord = random.randint(platformXMin, platformXMax)
-        #     platformYCoord = self.terrain.findYCoord(platformXCoord) #yCoord of the surface of the terrain
-        #     self.createPlatform(platformXCoord, platformYCoord)
         
     def createPlatform(self, start=False):
         if start == True:
@@ -52,6 +35,7 @@ class Map:
             self.platformList.append(obstacle)
 
     def createObstacle(self, start=False):
+        minDist = 100
         if start == True:
             for i in range(3):
                 xMin = i*self.canvas.canvasWidth//3
@@ -64,8 +48,26 @@ class Map:
             #create obstacles for the starting map
         else:
             #create obstacles to add onto the map -> on the border of the canvas
-            xCoord = self.canvas.canvasWidth
+
+            #ensures that obstacle generated is not too close
+            nearestObstacleIndex = self.findNearestObstacle(self.canvas.canvasWidth)
+            #print(nearestObstacleIndex)
+            nearestObstacle = self.obstacleList[nearestObstacleIndex]
+            nearestTerrainIndex = self.findNearestTerrain(self.canvas.canvasWidth)
+            #print(nearestTerrainIndex)
+            nearestTerrainBefore = self.terrainList[nearestTerrainIndex-1]
+            distFromNearestObstacle = self.canvas.canvasWidth - nearestObstacle.obstacle.xCoord - nearestObstacle.obstacle.width
+            distFromNearestTerrain = self.canvas.canvasWidth - nearestTerrainBefore.xCoord - nearestTerrainBefore.getWidthPixel(nearestTerrainBefore.width, Floor.width)
+            print(distFromNearestObstacle, distFromNearestTerrain)
+            distFromNearest = min(distFromNearestObstacle, distFromNearestTerrain)
+            if distFromNearest < minDist:
+                xCoord = self.canvas.canvasWidth + minDist - distFromNearest
+            else:
+                xCoord = self.canvas.canvasWidth
             yCoord = self.findTerrainHeight(xCoord)
+            if yCoord == None: #terrain has not been geenrated
+                return
+            print(f'xcoord:{xCoord} ycoord:{yCoord}')
             obstacle = Obstacle(map = self, xCoord = xCoord, yCoord = yCoord)
             self.obstacleList.append(obstacle)
     
@@ -84,6 +86,23 @@ class Map:
             if terrain.xCoord <= xCoord <= terrain.xCoord + terrain.getWidthPixel(terrain.width, Floor.width):
                 return terrain.yCoord
         return None
+
+    def findNearestObstacle(self, xCoord):
+        shortestDist = 100000
+        nearestIndex = 0
+        for obstacle in self.obstacleList:
+            distance = xCoord - obstacle.obstacle.xCoord - obstacle.obstacle.width
+            if distance < shortestDist:
+                shortestDist = distance
+                nearestIndex = self.obstacleList.index(obstacle)
+        return nearestIndex
+    
+    def findNearestTerrain(self, xCoord):
+        terrains = self.terrainList
+        for terrainIndex in range(len(terrains)):
+            terrain = terrains[terrainIndex]
+            if terrain.xCoord <= xCoord <= terrain.xCoord + terrain.getWidthPixel(terrain.width, Floor.width):
+                return terrainIndex
 
 class Canvas: 
     def __init__(self, canvasWidth, canvasHeight):
