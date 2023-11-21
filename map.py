@@ -59,7 +59,8 @@ class Map:
                 xCoord = random.randint(xMin, xMax)
                 yCoord = self.findTerrainHeight(xCoord)
                 obstacle = Obstacle(map = self, xCoord = xCoord, yCoord = yCoord)
-                self.obstacleList.append(obstacle)
+                if self.checkLegal(obstacle):
+                    self.obstacleList.append(obstacle)
                 #print(self.obstacleList)
             #create obstacles for the starting map
         else:
@@ -67,7 +68,8 @@ class Map:
             xCoord = self.canvas.canvasWidth
             yCoord = self.findTerrainHeight(xCoord)
             obstacle = Obstacle(map = self, xCoord = xCoord, yCoord = yCoord)
-            self.obstacleList.append(obstacle)
+            if self.checkLegal(obstacle):
+                self.obstacleList.append(obstacle)
     
     def createTerrain(self, start=False):
         if start == True:
@@ -84,6 +86,65 @@ class Map:
             if terrain.xCoord <= xCoord <= terrain.xCoord + terrain.getWidthPixel(terrain.width, Floor.width):
                 return terrain.yCoord
         return None
+    
+    def checkLegal(self, obstacle): #check if a piece legal
+        minDistFromObstacle = 100
+        minDistFromTerrain = 100
+        #check if it is far enough from other obstacles
+        otherObstacles = self.obstacleList
+        for otherObstacle in otherObstacles:
+            #other obstacles will definitely be before this 
+            #print('checking obstacle distance')
+            if obstacle.obstacle.xCoord - otherObstacle.obstacle.xCoord - otherObstacle.obstacle.width < minDistFromObstacle:
+                return False
+    
+        #check if it is far enough from terrain 
+        nearestTerrainIndex = self.findNearestTerrain(obstacle.obstacle.xCoord)
+
+        #check terrain before
+        try:
+            #print('checking terrain before')
+            terrainBefore = self.terrainList[nearestTerrainIndex-1]
+            distanceFromBefore = obstacle.obstacle.xCoord - terrainBefore.xCoord - terrainBefore.getWidthPixel(terrainBefore.width, Floor.width)
+            if distanceFromBefore < minDistFromTerrain:
+                return False
+        except IndexError:
+            pass
+
+        # #check terrain after
+        # try:
+        #     print('checking terrain after')
+        #     terrainAfter = self.terrainList[nearestTerrainIndex+1]
+        #     distanceFromAfter = terrainAfter.xCoord - obstacle.obstacle.xCoord - obstacle.obstacle.width
+        #     print(distanceFromAfter)
+        #     if distanceFromAfter < minDistFromTerrain:
+        #         return False
+        # except IndexError:
+        #     pass
+        
+        #cleared all checks
+        return True
+    
+    def findNearestTerrain(self,xCoord):
+        terrains = self.terrainList
+        for terrainIndex in range(len(terrains)):
+            if terrains[terrainIndex].xCoord <= xCoord <= terrains[terrainIndex].xCoord + terrains[terrainIndex].getWidthPixel(terrains[terrainIndex].width, Floor.width):
+                nearestTerrainIndex = terrainIndex
+        return nearestTerrainIndex
+        #check distance from terrain before this terrain
+    def findNearestObstacle(self,xCoord):
+        obstacles = self.obstacleList
+        shortestDistance = 100000
+        nearestIndex = 0
+        for obstacleIndex in range(len(obstacles)):
+            obstacle = obstacles[obstacleIndex]
+            distance = xCoord - obstacle.obstacle.xCoord - obstacle.obstacle.width
+            if distance < shortestDistance:
+                shortestDistance = distance
+                nearestIndex = obstacleIndex
+        return nearestIndex
+        
+
 
 class Canvas: 
     def __init__(self, canvasWidth, canvasHeight):
