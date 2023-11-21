@@ -11,7 +11,7 @@ class Square:
         self.yCoord = yCoord
 
     def draw(self):
-        drawRect(self.xCoord, self.yCoord - self.height, self.width, self.height)
+        drawRect(self.xCoord, self.yCoord - self.height, self.width, self.height, fill = 'red', border='black')
 
 class Spike:
     width = 50
@@ -23,17 +23,15 @@ class Spike:
         self.yCoord = yCoord
 
     def draw(self):
-        drawPolygon(self.xCoord, self.yCoord, self.xCoord+self.width//2, self.yCoord-self.height, self.xCoord+self.width, self.yCoord) #triangle
+        drawPolygon(self.xCoord, self.yCoord, self.xCoord+self.width//2, self.yCoord-self.height, self.xCoord+self.width, self.yCoord, fill = 'blue', border = 'black') #triangle
 
 class Obstacle: #defined by x Coord and obstacle type
-    obstacleProb = [0.8, 0.1, 0.1]
-    obstacleType = [None, Square, Spike]
+    obstacleProb = [0.5, 0.5]
+    obstacleType = [Square, Spike]
     def __init__(self, map = None, xCoord = 0, yCoord = 0):
         self.map = map
         obstacle = random.choices(Obstacle.obstacleType, weights = Obstacle.obstacleProb)[0]
-        if obstacle == None: 
-            self.obstacle = None
-        else: self.obstacle = obstacle(xCoord, yCoord)
+        self.obstacle = obstacle(xCoord, yCoord)
         
     
     def drawObstacle(self):

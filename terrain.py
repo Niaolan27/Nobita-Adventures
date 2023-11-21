@@ -53,4 +53,4 @@ class Floor: #floor is a building block of terrain
         self.fill = Floor.fill
 
     def draw(self):
-        drawRect(self.xCoord, self.yCoord, self.width, self.height, fill = self.fill)
+        drawRect(self.xCoord, self.yCoord, self.width, self.height, fill = self.fill, border='black')

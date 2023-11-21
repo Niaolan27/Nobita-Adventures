@@ -5,8 +5,9 @@ from obstacles import *
 from terrain import *
 
 class Map:
-    def __init__(self):
-        self.canvas = Canvas(600,400) #generate a long canvas -> can change the length of canvas to make game longer or shorter
+    def __init__(self, canvas = None):
+        #print(canvas[0], canvas[1])
+        self.canvas = Canvas(canvas[0], canvas[1]) #generate a long canvas -> can change the length of canvas to make game longer or shorter
         self.terrainList = []
         self.obstacleList = []
         self.platformList = []
@@ -46,7 +47,7 @@ class Map:
         else:
             #create obstacles to add onto the map -> on the border of the canvas
             xCoord = self.canvas.canvasWidth #at the border of the canvas
-            yCoord = self.findTerrainHeight(xCoord)
+            yCoord = self.findTerrainHeight(xCoord) - random.randint(100,150)
             obstacle = GamePlatform(map = self, xCoord = xCoord, yCoord = yCoord)
             self.platformList.append(obstacle)
 
@@ -58,11 +59,7 @@ class Map:
                 xCoord = random.randint(xMin, xMax)
                 yCoord = self.findTerrainHeight(xCoord)
                 obstacle = Obstacle(map = self, xCoord = xCoord, yCoord = yCoord)
-                if obstacle.obstacle == None: 
-                    #print('No obstacles')
-                    continue
-                else:
-                    self.obstacleList.append(obstacle)
+                self.obstacleList.append(obstacle)
                 #print(self.obstacleList)
             #create obstacles for the starting map
         else:
@@ -70,10 +67,7 @@ class Map:
             xCoord = self.canvas.canvasWidth
             yCoord = self.findTerrainHeight(xCoord)
             obstacle = Obstacle(map = self, xCoord = xCoord, yCoord = yCoord)
-            if obstacle.obstacle == None: 
-                pass
-            else:
-                self.obstacleList.append(obstacle)
+            self.obstacleList.append(obstacle)
     
     def createTerrain(self, start=False):
         if start == True:
@@ -89,7 +83,7 @@ class Map:
         for terrain in self.terrainList:
             if terrain.xCoord <= xCoord <= terrain.xCoord + terrain.getWidthPixel(terrain.width, Floor.width):
                 return terrain.yCoord
-        raise ValueError('No Y Coordinate found for terrain')
+        return None
 
 class Canvas: 
     def __init__(self, canvasWidth, canvasHeight):
