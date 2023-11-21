@@ -2,29 +2,36 @@ from cmu_graphics import *
 import random
 
 class GamePlatform:
-    def __init__(self, map, xCoord, yCoord):
+    def __init__(self, map = None, xCoord = None, yCoord = None, width = None, height = None):
         self.map = map
-        self.xCoord = xCoord
-        self.yCoord = yCoord - random.randint(100, 150) #random height between 100-150
-        self.platform = self.createPlatform()
-    
-    def createPlatform(self):
-        platform = []
-        numTiles = random.randint(1,5) #random length of platform between 1-5 tiles
-        for i in range(numTiles):
-            xCoord = self.xCoord + i*Tile.width
-            yCoord = self.yCoord
-            platform.append(Tile(xCoord, yCoord))
-        return platform
+        if xCoord == None: raise ValueError('xCoord not specified')
+        else: self.xCoord = xCoord
+        if yCoord == None: raise ValueError('yCoord not specified')
+        else: self.yCoord = yCoord
+        if width == None: self.width = random.randint(1,5)
+        else: self.width = width
+        if height == None: self.height = 1
+        else: self.height = height
     
     def drawPlatform(self):
-        for tile in self.platform:
-            tile.draw()
+        for rowIndex in range(self.height):
+            for colIndex in range(self.width):
+                xCoord = self.xCoord + self.getPixelWidth(colIndex, Tile.width)
+                yCoord = self.yCoord + self.getPixelHeight(rowIndex, Tile.height)
+                tile = Tile(xCoord, yCoord)
+                tile.draw()
 
     def updateXCoord(self, step):
-        for tile in self.platform:
-            tile.xCoord += step
+        self.xCoord += step
 
+    @staticmethod
+    def getPixelWidth(numBlocks, blockWidth):
+        return numBlocks*blockWidth
+    
+    @staticmethod
+    def getPixelHeight(numBlocks, blockHeight):
+        return numBlocks*blockHeight
+    
 class Tile:
     width = 50
     height = 20
@@ -35,4 +42,4 @@ class Tile:
         self.yCoord = yCoord
 
     def draw(self):
-        drawRect(self.xCoord, self.yCoord, self.width, self.height)
+        drawRect(self.xCoord, self.yCoord - self.height, self.width, self.height)
