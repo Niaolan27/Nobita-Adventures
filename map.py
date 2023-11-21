@@ -38,10 +38,17 @@ class Map:
         minDist = 100
         if start == True:
             for i in range(3):
-                xMin = i*self.canvas.canvasWidth//3
-                xMax = xMin + self.canvas.canvasWidth//3
-                xCoord = random.randint(xMin, xMax)
-                yCoord = self.findTerrainHeight(xCoord)
+                nearestObstacleIndex = self.findNearestObstacle(self.canvas.canvasWidth)
+                #print(nearestObstacleIndex)
+                if nearestObstacleIndex == None:
+                    xMin = i*self.canvas.canvasWidth//3
+                    xMax = xMin + self.canvas.canvasWidth//3
+                    xCoord = random.randint(xMin, xMax)
+                    yCoord = self.findTerrainHeight(0)
+                else:
+                    nearestObstacle = self.obstacleList[nearestObstacleIndex]
+                    xCoord = nearestObstacle.obstacle.xCoord + nearestObstacle.obstacle.width + random.randint(minDist, minDist+100)
+                    yCoord = self.findTerrainHeight(xCoord)
                 obstacle = Obstacle(map = self, xCoord = xCoord, yCoord = yCoord)
                 self.obstacleList.append(obstacle)
                 #print(self.obstacleList)
@@ -88,6 +95,8 @@ class Map:
         return None
 
     def findNearestObstacle(self, xCoord):
+        if len(self.obstacleList) == 0:
+            return None
         shortestDist = 100000
         nearestIndex = 0
         for obstacle in self.obstacleList:
