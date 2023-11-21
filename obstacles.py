@@ -8,7 +8,7 @@ class Square:
         self.width = Square.width
         self.height = Square.height
         self.xCoord = xCoord
-        self.yCoord = yCoord
+        self.yCoord = yCoord - self.height
 
     def draw(self):
         drawRect(self.xCoord, self.yCoord, self.width, self.height)
@@ -20,7 +20,7 @@ class Spike:
         self.width = Square.width
         self.height = Square.height
         self.xCoord = xCoord
-        self.yCoord = yCoord + 50
+        self.yCoord = yCoord
 
     def draw(self):
         drawPolygon(self.xCoord, self.yCoord, self.xCoord+self.width//2, self.yCoord-self.height, self.xCoord+self.width, self.yCoord) #triangle
@@ -28,11 +28,12 @@ class Spike:
 class Obstacle: #defined by x Coord and obstacle type
     obstacleDict = {0: Square,
                     1: Spike} #include a bunch of obstacle types here
-    obstacleProbWeights = {0: 0.2,
-                           1: 0.8} #probability of generating each obstacle -> can vary based on difficulty 
-    def __init__(self, map, xCoord):
+    obstacleProbWeights = {0: 0.8,
+                           1: 0.2} #probability of generating each obstacle -> can vary based on difficulty 
+    def __init__(self, map, xCoord, yCoord):
         self.xCoord = xCoord
-        self.yCoord = map.canvas.canvasHeight - 50 #top left corner of a square -> might have to redefine for each shape
+        self.yCoord = yCoord #yCoord of the terrain surface
+        #self.yCoord = map.canvas.canvasHeight - 50 #top left corner of a square -> might have to redefine for each shape
         self.map = map
         self.generateShape(self.xCoord, self.yCoord)
     

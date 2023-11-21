@@ -1,13 +1,16 @@
 import time
 from cmu_graphics import *
 from map import Map
+import random
 
 
 
 
 def onAppStart(app):
+    app.seed = 0
+    random.seed(app.seed)
     app.map = Map()
-    app.stepsPerSecond = 30
+    app.stepsPerSecond = 60
     app.paused = True
     app.startTime = time.time()
     app.stepInterval = 1/app.stepsPerSecond
@@ -17,6 +20,7 @@ def onAppStart(app):
 
 
 def redrawAll(app):
+    app.map.terrain.drawTerrain()
     obstacles = app.map.obstacleList
     platforms = app.map.platformList
     for obstacle in obstacles: #draws each obstacle
@@ -35,10 +39,13 @@ def takeStep(app):
     #currentTime = time.time()
     obstacles = app.map.obstacleList
     platforms = app.map.platformList
+    terrain = app.map.terrain
+    terrain.updateXCoord(-10)
     for obstacle in obstacles:
         obstacle.updateXCoord(-10)
     for platform in platforms:
         platform.updateXCoord(-10)
+    
     #print(pythonRound(currentTime-app.startTime, 1)%app.generateInterval)
     # if pythonRound(currentTime-app.startTime, 1)%app.generateInterval == 0.0: #create an obstacle right outside the canvas
     #     #print(app.map.canvas.canvasWidth)
