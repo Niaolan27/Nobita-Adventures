@@ -1,11 +1,14 @@
 import time
 from cmu_graphics import *
 from map import Map
+import random
 
 
 
 
 def onAppStart(app):
+    app.seed = 0
+    random.seed(app.seed)
     app.map = Map()
     app.stepsPerSecond = 60
     app.paused = True
