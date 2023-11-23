@@ -40,4 +40,3 @@ class Obstacle: #defined by x Coord and obstacle type
     
     def updateXCoord(self, step):
         self.obstacle.xCoord += step
-
