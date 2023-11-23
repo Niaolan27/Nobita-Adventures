@@ -110,19 +110,6 @@ class Map:
                 return False
         except IndexError:
             pass
-
-        # #check terrain after
-        # try:
-        #     print('checking terrain after')
-        #     terrainAfter = self.terrainList[nearestTerrainIndex+1]
-        #     distanceFromAfter = terrainAfter.xCoord - obstacle.obstacle.xCoord - obstacle.obstacle.width
-        #     print(distanceFromAfter)
-        #     if distanceFromAfter < minDistFromTerrain:
-        #         return False
-        # except IndexError:
-        #     pass
-        
-        #cleared all checks
         return True
     
     def findNearestTerrain(self,xCoord):
@@ -132,6 +119,7 @@ class Map:
                 nearestTerrainIndex = terrainIndex
         return nearestTerrainIndex
         #check distance from terrain before this terrain
+        
     def findNearestObstacle(self,xCoord):
         obstacles = self.obstacleList
         shortestDistance = 100000
