@@ -5,51 +5,73 @@ import random
 
 
 
-
 def onAppStart(app):
     app.seed = 0
     random.seed(app.seed)
-    app.map = Map()
-    app.stepsPerSecond = 60
-    app.paused = True
-    app.startTime = time.time()
-    app.stepInterval = 1/app.stepsPerSecond
     app.width = 600
     app.height = 400
+    app.map = Map(canvas = (app.width,app.height))
+    app.stepsPerSecond = 25
+    app.stepSize = 10
+    app.paused = False
+    app.startTime = time.time()
+    
     #app.generateInterval = 2
 
 
 def redrawAll(app):
-    app.map.terrain.drawTerrain()
     obstacles = app.map.obstacleList
     platforms = app.map.platformList
+    terrains = app.map.terrainList
+    for terrain in terrains:
+        terrain.drawTerrain()
     for obstacle in obstacles: #draws each obstacle
         obstacle.drawObstacle()
     for platform in platforms: #draws each platform
         platform.drawPlatform()
     
+    
 
 def onKeyPress(app, key):
-    pass
+    if key == 'p':
+        app.paused = not app.paused
 
 def onStep(app):
-    takeStep(app)
+    if not app.paused:
+        takeStep(app)
 
 def takeStep(app):
     #currentTime = time.time()
+
+    #condition for generating terrain is different
+    #check if there is any terrain at the border of the canvas
+    borderYCoord = app.map.findTerrainHeight(app.width + app.stepSize)
+    #print(borderYCoord)
+    if borderYCoord == None: 
+        app.map.createTerrain(start = False)
+
+    #randomly generate obstacles and platforms
+    obstacleProb = [0.95, 0.05]
+    obstacleType = [False, True]
+    obstacleBool = random.choices(obstacleType, weights = obstacleProb)[0]
+    if obstacleBool:
+        app.map.createObstacle()
+    platformProb = [0.99, 0.01]
+    platformType = [False, True]
+    platformBool = random.choices(platformType, weights = platformProb)[0]
+    if platformBool:
+        app.map.createPlatform()
+    
+    #update positions
     obstacles = app.map.obstacleList
     platforms = app.map.platformList
-    terrain = app.map.terrain
-    terrain.updateXCoord(-10)
+    terrains = app.map.terrainList
     for obstacle in obstacles:
-        obstacle.updateXCoord(-10)
+        obstacle.updateXCoord(-app.stepSize)
     for platform in platforms:
-        platform.updateXCoord(-10)
-    
-    #print(pythonRound(currentTime-app.startTime, 1)%app.generateInterval)
-    # if pythonRound(currentTime-app.startTime, 1)%app.generateInterval == 0.0: #create an obstacle right outside the canvas
-    #     #print(app.map.canvas.canvasWidth)
-    #     app.map.createObstacle(app.map.canvas.canvasWidth)
+        platform.updateXCoord(-app.stepSize)
+    for terrain in terrains:
+        terrain.updateXCoord(-app.stepSize)
     
 
 def main():
