@@ -51,12 +51,12 @@ def takeStep(app):
         app.map.createTerrain(start = False)
 
     #randomly generate obstacles and platforms
-    obstacleProb = [0.9, 0.1]
+    obstacleProb = [0.95, 0.05]
     obstacleType = [False, True]
     obstacleBool = random.choices(obstacleType, weights = obstacleProb)[0]
     if obstacleBool:
         app.map.createObstacle()
-    platformProb = [0.95, 0.05]
+    platformProb = [0.99, 0.01]
     platformType = [False, True]
     platformBool = random.choices(platformType, weights = platformProb)[0]
     if platformBool:

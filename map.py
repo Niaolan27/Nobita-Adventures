@@ -42,14 +42,16 @@ class Map:
             xCoord = random.randint(xMin, xMax)
             yCoord = self.findTerrainHeight(xCoord) - random.randint(100,150)
             platform = GamePlatform(map = self, xCoord = xCoord, yCoord = yCoord)
-            self.platformList.append(platform)
+            if self.checkLegalPlatform(platform):
+                self.platformList.append(platform)
             #create obstacles for the starting map
         else:
             #create obstacles to add onto the map -> on the border of the canvas
             xCoord = self.canvas.canvasWidth #at the border of the canvas
             yCoord = self.findTerrainHeight(xCoord) - random.randint(100,150)
-            obstacle = GamePlatform(map = self, xCoord = xCoord, yCoord = yCoord)
-            self.platformList.append(obstacle)
+            platform = GamePlatform(map = self, xCoord = xCoord, yCoord = yCoord)
+            if self.checkLegalPlatform(platform):
+                self.platformList.append(platform)
 
     def createObstacle(self, start=False):
         if start == True:
@@ -59,7 +61,7 @@ class Map:
                 xCoord = random.randint(xMin, xMax)
                 yCoord = self.findTerrainHeight(xCoord)
                 obstacle = Obstacle(map = self, xCoord = xCoord, yCoord = yCoord)
-                if self.checkLegal(obstacle):
+                if self.checkLegalObstacle(obstacle):
                     self.obstacleList.append(obstacle)
                 #print(self.obstacleList)
             #create obstacles for the starting map
@@ -68,7 +70,7 @@ class Map:
             xCoord = self.canvas.canvasWidth
             yCoord = self.findTerrainHeight(xCoord)
             obstacle = Obstacle(map = self, xCoord = xCoord, yCoord = yCoord)
-            if self.checkLegal(obstacle):
+            if self.checkLegalObstacle(obstacle):
                 self.obstacleList.append(obstacle)
     
     def createTerrain(self, start=False):
@@ -87,7 +89,7 @@ class Map:
                 return terrain.yCoord
         return None
     
-    def checkLegal(self, obstacle): #check if a piece legal
+    def checkLegalObstacle(self, obstacle): #check if a piece legal
         minDistFromObstacle = 100
         minDistFromTerrain = 100
         #check if it is far enough from other obstacles
@@ -111,6 +113,33 @@ class Map:
         except IndexError:
             pass
         return True
+    
+    def checkLegalPlatform(self, platform): #check if a piece legal
+        minDistFromPlatform = 100
+        #minDistFromTerrain = 100
+        #check if it is far enough from other obstacles
+        otherPlatforms = self.platformList
+        for otherPlatform in otherPlatforms:
+            #other obstacles will definitely be before this 
+            #print('checking obstacle distance')
+
+            if platform.xCoord - otherPlatform.xCoord - otherPlatform.getPixelWidth(otherPlatform.width, Tile.width) < minDistFromPlatform:
+                return False
+        return True
+    
+        #check if it is far enough from terrain 
+        # nearestTerrainIndex = self.findNearestTerrain(obstacle.obstacle.xCoord)
+
+        # #check terrain before
+        # try:
+        #     #print('checking terrain before')
+        #     terrainBefore = self.terrainList[nearestTerrainIndex-1]
+        #     distanceFromBefore = obstacle.obstacle.xCoord - terrainBefore.xCoord - terrainBefore.getWidthPixel(terrainBefore.width, Floor.width)
+        #     if distanceFromBefore < minDistFromTerrain:
+        #         return False
+        # except IndexError:
+        #     pass
+        # return True
     
     def findNearestTerrain(self,xCoord):
         terrains = self.terrainList
