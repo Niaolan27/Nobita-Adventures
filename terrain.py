@@ -4,34 +4,17 @@ import random
 class Terrain:
     #what is the terrain made of?
     #lets try a simple case of flat terrain
-    minDistFromObstacle = 100
     def __init__(self, map = None, xCoord = None, yCoord = None, width = 0, height = 0):
         self.map = map
         if width == 0: self.width = random.randint(1,12) #width is number of blocks wide
         else: self.width = width 
 
-        if self.obstacleTooClose(xCoord):
-            #print('obstacle too close')
-            self.height = self.map.terrainList[-1].height
-        else:
-            if height == 0: self.height = random.randint(1,3) #height not specified   
-            else: self.height = height
+        if height == 0: self.height = random.randint(1,3) #height not specified   
+        else: self.height = height
 
         self.xCoord = xCoord 
 
         self.yCoord = self.map.canvas.canvasHeight - self.getHeightPixel(self.height, Floor.height) #yCoord is dependent on height of terrain
-
-    def obstacleTooClose(self, xCoord):
-        minDistFromObstacle = 100
-        nearestObstacleIndex = self.map.findNearestObstacle(xCoord)
-        #print(nearestObstacleIndex, len(self.map.obstacleList))
-        if len(self.map.obstacleList) != 0: #non empty
-            nearestObstacle = self.map.obstacleList[nearestObstacleIndex]
-            distFromObstacle = xCoord-nearestObstacle.obstacle.xCoord-nearestObstacle.obstacle.width
-            if distFromObstacle < minDistFromObstacle:
-                return True
-            else: return False
-        return False
 
     @staticmethod
     def getWidthPixel(numBlocks, blockWidth):
