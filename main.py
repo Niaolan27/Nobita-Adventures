@@ -1,6 +1,7 @@
 import time
 from cmu_graphics import *
 from map import Map
+from player import Player
 import random
 
 
@@ -11,6 +12,7 @@ def onAppStart(app):
     app.width = 600
     app.height = 400
     app.map = Map(canvas = (app.width,app.height))
+    app.player = Player(app.map)
     app.stepsPerSecond = 25
     app.stepSize = 10
     app.paused = False
@@ -23,6 +25,7 @@ def redrawAll(app):
     obstacles = app.map.obstacleList
     platforms = app.map.platformList
     terrains = app.map.terrainList
+    app.player.drawPlayer()
     for terrain in terrains:
         terrain.drawTerrain()
     for obstacle in obstacles: #draws each obstacle
@@ -35,6 +38,10 @@ def redrawAll(app):
 def onKeyPress(app, key):
     if key == 'p':
         app.paused = not app.paused
+    if key == 'up':
+        print('jump')
+        app.player.isJumping = True
+        app.player.vy = -20 #give player a boost upwards
 
 def onStep(app):
     if not app.paused:
@@ -63,6 +70,7 @@ def takeStep(app):
         app.map.createPlatform()
     
     #update positions
+    app.player.updatePosition()
     obstacles = app.map.obstacleList
     platforms = app.map.platformList
     terrains = app.map.terrainList

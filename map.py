@@ -89,6 +89,12 @@ class Map:
                 return terrain.yCoord
         return None
     
+    def findPlatformHeight(self, xCoord):
+        for platform in self.platformList:
+            if platform.xCoord <= xCoord <= platform.xCoord + platform.getWidthPixel(platform.width, Tile.width):
+                return platform.yCoord
+        return None
+    
     def checkLegalObstacle(self, obstacle): #check if a piece legal
         minDistFromObstacle = 100
         minDistFromTerrain = 100
@@ -123,7 +129,7 @@ class Map:
             #other obstacles will definitely be before this 
             #print('checking obstacle distance')
 
-            if platform.xCoord - otherPlatform.xCoord - otherPlatform.getPixelWidth(otherPlatform.width, Tile.width) < minDistFromPlatform:
+            if platform.xCoord - otherPlatform.xCoord - otherPlatform.getWidthPixel(otherPlatform.width, Tile.width) < minDistFromPlatform:
                 return False
         return True
     
