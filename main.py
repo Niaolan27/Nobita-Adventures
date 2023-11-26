@@ -39,9 +39,11 @@ def onKeyPress(app, key):
     if key == 'p':
         app.paused = not app.paused
     if key == 'up':
-        print('jump')
+        #print('jump')
         app.player.isJumping = True
         app.player.vy = -20 #give player a boost upwards
+    if key == 's':
+        takeStep(app)
 
 def onStep(app):
     if not app.paused:

@@ -4,48 +4,72 @@ from gamePlatform import *
 from obstacles import *
 
 class Player:
+    height = 50
+    width = 50
     def __init__(self, map):
-        self.height = 50
-        self.width = 50
+        self.height = Player.height
+        self.width = Player.width
         self.x = 50
         self.y = map.terrainList[0].yCoord
         self.map = map
         self.vx = 0
         self.vy = 0
         self.ax = 0
-        self.ay = 1
+        self.ay = 2
         self.isJumping = False
 
     def updatePosition(self):
-        ifLanded, _ = self.checkIfLanded()
-        if not ifLanded or self.isJumping: #if jumping or jumping off, update position
-            self.x += self.vx
-            self.y += self.vy
-            self.vx += self.ax
-            self.vy += self.ay      
-        ifLanded, heightLanded = self.checkIfLanded() #check if landed after updating position
+        #take a step and check if it is legal?
+        self.x += self.vx
+        self.y += self.vy
+        self.vy += self.ay
+        self.vx += self.ax
+
+        #check if it is legal aka did it land or collide
+        ifLanded, heightLanded = self.checkIfLanded()
         if ifLanded:
+            #undo move
+            self.x -= self.vx
+            self.y = heightLanded
+            self.vx -= self.ax
+            #reset velocity
             self.vy = 0
             self.isJumping = False
-            # terrainHeight = self.map.findTerrainHeight(self.x)
-            # platformHeight = self.map.findPlatformHeight(self.x)
-            self.y = heightLanded
-            
+        #elif not ifLanded or self.isJumping: #if jumping or jumping off, update position
+        else:
+            #check if player collides from below
+            ifFromBelow, heightCollided = self.checkFromBelow()
+            if ifFromBelow:
+                #undo move
+                self.x -= self.vx
+                self.y = heightCollided
+                self.vy = 0
+                self.vy += self.ay
+                self.vx -= self.ax
+            else:
+                pass
 
-    def checkIfLanded(self):
+        
+
+    def checkIfLanded(self): #return True/False for landing, and height of landing
         terrainHeight = self.map.findTerrainHeight(self.x) 
         platformHeight = self.map.findPlatformHeight(self.x)
-        if platformHeight != None and  (platformHeight-Tile.height <= self.y <= platformHeight): #check for landing on platforms
-            return True, platformHeight - Tile.height
-        if self.y >= terrainHeight:
-            #print('landed')
+        if platformHeight != None: #there is a platform
+            platformTopEdge = platformHeight - Tile.height
+            platformBottomEdge = platformHeight
+            if (platformTopEdge <= self.y <= platformBottomEdge): #landing on platform from above 
+                return True, platformHeight - Tile.height
+        if self.y >= terrainHeight: #landing on terrain from above
             return True, terrainHeight
-        # for platform in self.map.platformList:
-        #     if self.y == platform.yCoord+platform.getHeightPixel(platform.height, Tile.height):
-        #         return True
-        # for obstacle in self.map.obstacleList:
-        #     if self.y == obstacle.obstacle.yCoord+obstacle.obstacle.height:
-        #         return True
+        return False, 0
+    
+    def checkFromBelow(self): #return True/False for colliding from below, and height of collision
+        platformHeight = self.map.findPlatformHeight(self.x)
+        if platformHeight != None: #there is a platform
+            platformTopEdge = platformHeight - Tile.height
+            platformBottomEdge = platformHeight
+            if (platformTopEdge <= self.y - self.height <= platformBottomEdge): #colliding into the platform from below
+                return True, platformHeight + self.height
         return False, 0
     
     def drawPlayer(self):

@@ -3,6 +3,7 @@ from cmu_graphics import *
 from gamePlatform import *
 from obstacles import *
 from terrain import *
+from player import *
 
 class Map:
     def __init__(self, canvas = None):
@@ -91,7 +92,11 @@ class Map:
     
     def findPlatformHeight(self, xCoord):
         for platform in self.platformList:
+            #check if the back of player is on the platform
             if platform.xCoord <= xCoord <= platform.xCoord + platform.getWidthPixel(platform.width, Tile.width):
+                return platform.yCoord
+            #check if the front of player is on the platform
+            elif platform.xCoord <= xCoord + Player.width <= platform.xCoord + platform.getWidthPixel(platform.width, Tile.width):
                 return platform.yCoord
         return None
     
