@@ -71,6 +71,11 @@ def takeStep(app):
     if platformBool:
         app.map.createPlatform()
     
+    #remove platforms, obstacles and terrains which are off the canvas
+    app.map.removePlatforms()
+    app.map.removeObstacles()
+    app.map.removeTerrains()
+    
     #update positions
     app.player.updatePosition()
     obstacles = app.map.obstacleList

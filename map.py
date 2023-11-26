@@ -84,6 +84,29 @@ class Map:
             terrain = Terrain(map = self, xCoord = self.canvas.canvasWidth)
         self.terrainList.append(terrain)
 
+    def removeObstacles(self):
+        if self.obstacleList == []: return #non empty 
+        firstObstacle = self.obstacleList[0]
+        if firstObstacle.obstacle.xCoord + firstObstacle.obstacle.width <= 0:
+            self.obstacleList.pop(0)
+        print(len(self.obstacleList))
+        return
+
+    def removePlatforms(self):
+        if self.platformList == []: return #non empty
+        firstPlatform = self.platformList[0]
+        if firstPlatform.xCoord + firstPlatform.getWidthPixel(firstPlatform.width, Tile.width) <= 0:
+            self.platformList.pop(0)
+        print(len(self.platformList))
+        return
+
+    def removeTerrains(self):
+        if self.terrainList == []: return #non empty
+        firstTerrain = self.terrainList[0]
+        if firstTerrain.xCoord + firstTerrain.getWidthPixel(firstTerrain.width, Floor.width) <= 0:
+            self.terrainList.pop(0)
+        return
+
     def findTerrainHeight(self, xCoord):
         for terrain in self.terrainList:
             if terrain.xCoord <= xCoord <= terrain.xCoord + terrain.getWidthPixel(terrain.width, Floor.width):
@@ -137,20 +160,6 @@ class Map:
             if platform.xCoord - otherPlatform.xCoord - otherPlatform.getWidthPixel(otherPlatform.width, Tile.width) < minDistFromPlatform:
                 return False
         return True
-    
-        #check if it is far enough from terrain 
-        # nearestTerrainIndex = self.findNearestTerrain(obstacle.obstacle.xCoord)
-
-        # #check terrain before
-        # try:
-        #     #print('checking terrain before')
-        #     terrainBefore = self.terrainList[nearestTerrainIndex-1]
-        #     distanceFromBefore = obstacle.obstacle.xCoord - terrainBefore.xCoord - terrainBefore.getWidthPixel(terrainBefore.width, Floor.width)
-        #     if distanceFromBefore < minDistFromTerrain:
-        #         return False
-        # except IndexError:
-        #     pass
-        # return True
     
     def findNearestTerrain(self,xCoord):
         terrains = self.terrainList
