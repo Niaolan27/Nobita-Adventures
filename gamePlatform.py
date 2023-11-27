@@ -16,8 +16,8 @@ class GamePlatform:
     def drawPlatform(self):
         for rowIndex in range(self.height):
             for colIndex in range(self.width):
-                xCoord = self.xCoord + self.getPixelWidth(colIndex, Tile.width)
-                yCoord = self.yCoord + self.getPixelHeight(rowIndex, Tile.height)
+                xCoord = self.xCoord + self.getWidthPixel(colIndex, Tile.width)
+                yCoord = self.yCoord + self.getHeightPixel(rowIndex, Tile.height)
                 tile = Tile(xCoord, yCoord)
                 tile.draw()
 
@@ -25,11 +25,11 @@ class GamePlatform:
         self.xCoord += step
 
     @staticmethod
-    def getPixelWidth(numBlocks, blockWidth):
+    def getWidthPixel(numBlocks, blockWidth):
         return numBlocks*blockWidth
     
     @staticmethod
-    def getPixelHeight(numBlocks, blockHeight):
+    def getHeightPixel(numBlocks, blockHeight):
         return numBlocks*blockHeight
     
 class Tile:

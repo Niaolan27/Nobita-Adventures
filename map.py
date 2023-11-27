@@ -3,6 +3,7 @@ from cmu_graphics import *
 from gamePlatform import *
 from obstacles import *
 from terrain import *
+from player import *
 
 class Map:
     def __init__(self, canvas = None):
@@ -83,11 +84,44 @@ class Map:
             terrain = Terrain(map = self, xCoord = self.canvas.canvasWidth)
         self.terrainList.append(terrain)
 
+    def removeObstacles(self):
+        if self.obstacleList == []: return #non empty 
+        firstObstacle = self.obstacleList[0]
+        if firstObstacle.obstacle.xCoord + firstObstacle.obstacle.width <= -50:
+            self.obstacleList.pop(0)
+        #print(len(self.obstacleList))
+        return
+
+    def removePlatforms(self):
+        if self.platformList == []: return #non empty
+        firstPlatform = self.platformList[0]
+        if firstPlatform.xCoord + firstPlatform.getWidthPixel(firstPlatform.width, Tile.width) <= -50: #add some buffer
+            self.platformList.pop(0)
+        #print(len(self.platformList))
+        return
+
+    def removeTerrains(self):
+        if self.terrainList == []: return #non empty
+        firstTerrain = self.terrainList[0]
+        if firstTerrain.xCoord + firstTerrain.getWidthPixel(firstTerrain.width, Floor.width) <= -50:
+            self.terrainList.pop(0)
+        return
+
     def findTerrainHeight(self, xCoord):
         for terrain in self.terrainList:
             if terrain.xCoord <= xCoord <= terrain.xCoord + terrain.getWidthPixel(terrain.width, Floor.width):
                 return terrain.yCoord
         return None
+    
+    # def findPlatformHeight(self, xCoord):
+    #     for platform in self.platformList:
+    #         #check if the back of player is on the platform
+    #         if platform.xCoord <= xCoord <= platform.xCoord + platform.getWidthPixel(platform.width, Tile.width):
+    #             return platform.yCoord
+    #         #check if the front of player is on the platform
+    #         elif platform.xCoord <= xCoord + Player.width <= platform.xCoord + platform.getWidthPixel(platform.width, Tile.width):
+    #             return platform.yCoord
+    #     return None
     
     def checkLegalObstacle(self, obstacle): #check if a piece legal
         minDistFromObstacle = 100
@@ -116,30 +150,28 @@ class Map:
     
     def checkLegalPlatform(self, platform): #check if a piece legal
         minDistFromPlatform = 100
-        #minDistFromTerrain = 100
+        minDistFromTerrain = 100
         #check if it is far enough from other obstacles
         otherPlatforms = self.platformList
         for otherPlatform in otherPlatforms:
             #other obstacles will definitely be before this 
             #print('checking obstacle distance')
 
-            if platform.xCoord - otherPlatform.xCoord - otherPlatform.getPixelWidth(otherPlatform.width, Tile.width) < minDistFromPlatform:
+            if platform.xCoord - otherPlatform.xCoord - otherPlatform.getWidthPixel(otherPlatform.width, Tile.width) < minDistFromPlatform:
                 return False
-        return True
-    
-        #check if it is far enough from terrain 
-        # nearestTerrainIndex = self.findNearestTerrain(obstacle.obstacle.xCoord)
+            
+        nearestTerrainIndex = self.findNearestTerrain(platform.xCoord)
 
-        # #check terrain before
-        # try:
-        #     #print('checking terrain before')
-        #     terrainBefore = self.terrainList[nearestTerrainIndex-1]
-        #     distanceFromBefore = obstacle.obstacle.xCoord - terrainBefore.xCoord - terrainBefore.getWidthPixel(terrainBefore.width, Floor.width)
-        #     if distanceFromBefore < minDistFromTerrain:
-        #         return False
-        # except IndexError:
-        #     pass
-        # return True
+        #check terrain before
+        try:
+            #print('checking terrain before')
+            terrainBefore = self.terrainList[nearestTerrainIndex-1]
+            distanceFromBefore = platform.xCoord - terrainBefore.xCoord - terrainBefore.getWidthPixel(terrainBefore.width, Floor.width)
+            if distanceFromBefore < minDistFromTerrain:
+                return False
+        except IndexError:
+            pass
+        return True
     
     def findNearestTerrain(self,xCoord):
         terrains = self.terrainList
@@ -160,7 +192,20 @@ class Map:
                 shortestDistance = distance
                 nearestIndex = obstacleIndex
         return nearestIndex
-        
+    
+    def findNextObstacle(self, xCoord):
+        obstacles = self.obstacleList
+        for obstacleIndex in range(len(obstacles)):
+            obstacle = obstacles[obstacleIndex]
+            if obstacle.obstacle.xCoord >= xCoord:
+                return obstacle
+
+    def findNextPlatform(self, xCoord):
+        platforms = self.platformList
+        for platformIndex in range(len(platforms)):
+            platform = platforms[platformIndex]
+            if platform.xCoord >= xCoord:
+                return platform
 
 
 class Canvas: 
