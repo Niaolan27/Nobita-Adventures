@@ -53,7 +53,7 @@ class Player:
     #     return
 
     def updatePosition(self):
-        print(self.y, self.vy)
+        #print(self.y, self.vy)
         #self.x += self.vx
         self.y += self.vy
         self.vy += self.ay
@@ -62,6 +62,7 @@ class Player:
         ifLandedOnTerrain, heightLanded = self.checkIfLandedOnTerrain()
         ifCollidedWithPlatform, collidedPlatform, platformCollisionDirection = self.checkIfCollidedWithPlatform()
         ifCollidedWithObstacle, collidedObstacle, obstacleCollisionDirection = self.checkIfCollidedWithObstacle()
+        #ifCollidedWithTerrain, collidedTerrain = self.checkIfCollideWithTerrain()
         if ifLandedOnTerrain:
             #undo move
             #self.x -= self.vx
@@ -84,6 +85,8 @@ class Player:
                 self.y = platformHeight - Tile.height
                 self.vy = 0
                 self.ax = 0
+                self.isJumping = False
+                self.isDoubleJumping = False
             elif platformCollisionDirection == 'bottom':
                 print('collided from bottom')
                 #self.x -= self.vx
@@ -127,15 +130,15 @@ class Player:
                 playerCenterY = self.y - self.height//2
                 obstacleCenterX = obstacle.obstacle.xCoord + obstacle.obstacle.width//2
                 obstacleCenterY = obstacle.obstacle.yCoord - obstacle.obstacle.height//2
-                print(playerCenterY, obstacleCenterY)
+                #print(playerCenterY, obstacleCenterY)
                 if self.intersect(playerCenterX, playerCenterY, self.width, self.height,   
                                 obstacleCenterX, obstacleCenterY, obstacle.obstacle.width, obstacle.obstacle.height): #TODO
-                    print('intersect')
+                    #print('intersect')
                     if abs(obstacleCenterX-playerCenterX) < abs(obstacleCenterY-playerCenterY): #collided from top
                         return True, obstacle, 'top'
                     else:
                         return True, obstacle, 'front'
-                print('no intersect')
+                #print('no intersect')
                 # if obstacleCenterX-playerCenterX  == (self.width + obstacle.obstacle.width)//2:
                 #     return True, obstacle, 'front'
                 # else:
