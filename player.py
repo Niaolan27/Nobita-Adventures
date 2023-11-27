@@ -18,6 +18,7 @@ class Player:
         self.ax = 0
         self.ay = 2
         self.isJumping = False
+        self.isDoubleJumping = False
 
     # def updatePosition(self):
     #     #take a step and check if it is legal?
@@ -50,11 +51,12 @@ class Player:
     #         else:
     #             pass
     #     return
+
     def updatePosition(self):
+        print(self.y, self.vy)
         #self.x += self.vx
         self.y += self.vy
         self.vy += self.ay
-        self.vx += self.ax
 
         #check if it is legal aka did it land or collide
         ifLandedOnTerrain, heightLanded = self.checkIfLandedOnTerrain()
@@ -65,62 +67,79 @@ class Player:
             #self.x -= self.vx
             self.y = heightLanded
             self.vx = Player.speed
+            self.ax = 0
             #reset velocity
             self.vy = 0
             self.isJumping = False
-        elif ifCollidedWithPlatform:
-            print('collided with platform')
+            self.isDoubleJumping = False
+
+        if ifCollidedWithPlatform:
+            #print('collided with platform')
             platformHeight = collidedPlatform.yCoord
             platformXCoord = collidedPlatform.xCoord
             if platformCollisionDirection == 'top':
                 print('collided from top')
                 #self.x -= self.vx
-                self.vx -= self.ax
+                self.vx = Player.speed
                 self.y = platformHeight - Tile.height
+                self.vy = 0
+                self.ax = 0
             elif platformCollisionDirection == 'bottom':
                 print('collided from bottom')
                 #self.x -= self.vx
-                self.vx -= self.ax
+                self.vx = Player.speed
                 self.y = platformHeight + self.height
                 self.vy = self.ay
+                self.ax = 0
             else:
                 print('collided from front')
                 #self.x = platformXCoord - self.width
                 self.y -= self.vy
-                self.vx = -2
+                self.vx = -3
                 self.vy += self.ay
+                self.ax = 0.5
 
-        elif ifCollidedWithObstacle:
+        if ifCollidedWithObstacle:
             print('collided with obstacle')
             # obstacleYCoord = self.map.findObstacleYCoord(self.x)
             # obstacleXCoord = self.map.findObstacleXCoord(self.x) 
             if obstacleCollisionDirection == 'front': #TODO
                 print('collided from front')
                 #self.x = collidedObstacle.obstacle.xCoord - self.width
-                self.y -= self.vy
+                #self.y -= self.vy
                 self.vx = 0
+                self.ax = 0
             else:
                 print('collided from top')
                 #self.x -= self.vx
-                self.vx -= self.ax
+                self.vx = Player.speed
                 self.y = collidedObstacle.obstacle.yCoord - collidedObstacle.obstacle.height
                 self.vy = 0
+                self.ax = 0
         else:
-            pass
+            self.vx = Player.speed
 
     def checkIfCollidedWithObstacle(self):
+        if self.map.obstacleList == []: return False, None, None
         for obstacle in self.map.obstacleList:
-            if obstacle == None: return False, None
-            playerCenterX = self.x + self.width//2
-            playerCenterY = self.y - self.height//2
-            obstacleCenterX = obstacle.obstacle.xCoord + obstacle.obstacle.width//2
-            obstacleCenterY = obstacle.obstacle.yCoord - obstacle.obstacle.height//2
-            if self.intersect(playerCenterX, playerCenterY, self.width, self.height,   
-                            obstacleCenterX, obstacleCenterY, obstacle.obstacle.width, obstacle.obstacle.height): #TODO
-                if abs(playerCenterX - obstacleCenterX) == (self.width + obstacle.obstacle.width):
-                    return True, obstacle, 'front'
-                else:
-                    return True, obstacle, 'top'
+            if obstacle.obstacle.xCoord - self.width <=self.x<= obstacle.obstacle.xCoord:
+                playerCenterX = self.x + self.width//2
+                playerCenterY = self.y - self.height//2
+                obstacleCenterX = obstacle.obstacle.xCoord + obstacle.obstacle.width//2
+                obstacleCenterY = obstacle.obstacle.yCoord - obstacle.obstacle.height//2
+                print(playerCenterY, obstacleCenterY)
+                if self.intersect(playerCenterX, playerCenterY, self.width, self.height,   
+                                obstacleCenterX, obstacleCenterY, obstacle.obstacle.width, obstacle.obstacle.height): #TODO
+                    print('intersect')
+                    if abs(obstacleCenterX-playerCenterX) < abs(obstacleCenterY-playerCenterY): #collided from top
+                        return True, obstacle, 'top'
+                    else:
+                        return True, obstacle, 'front'
+                print('no intersect')
+                # if obstacleCenterX-playerCenterX  == (self.width + obstacle.obstacle.width)//2:
+                #     return True, obstacle, 'front'
+                # else:
+                #     return True, obstacle, 'top'
         return False, None, None
 
     def checkIfCollidedWithPlatform(self):
@@ -131,6 +150,7 @@ class Player:
                 playerCenterY = self.y - self.height//2
                 platformCenterX = platform.xCoord + platform.getWidthPixel(platform.width, Tile.width)//2
                 platformCenterY = platform.yCoord - platform.getHeightPixel(platform.height, Tile.height)//2
+                # print(playerCenterY, platformCenterY)
                 if self.intersect(playerCenterX, playerCenterY, self.width, self.height,   
                                 platformCenterX, platformCenterY, 
                                 platform.getWidthPixel(platform.width, Tile.width), 

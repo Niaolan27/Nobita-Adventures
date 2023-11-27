@@ -10,7 +10,7 @@ class Terrain:
         if width == 0: self.width = random.randint(1,12) #width is number of blocks wide
         else: self.width = width 
 
-        if self.obstacleTooClose(xCoord):
+        if self.obstacleTooClose(xCoord) or self.platformTooClose(xCoord):
             #print('obstacle too close')
             self.height = self.map.terrainList[-1].height
         else:
@@ -23,12 +23,24 @@ class Terrain:
 
     def obstacleTooClose(self, xCoord):
         minDistFromObstacle = 100
-        nearestObstacleIndex = self.map.findNearestObstacle(xCoord)
+        
         #print(nearestObstacleIndex, len(self.map.obstacleList))
         if len(self.map.obstacleList) != 0: #non empty
-            nearestObstacle = self.map.obstacleList[nearestObstacleIndex]
+            nearestObstacle = self.map.obstacleList[-1] #most recent obstacle
             distFromObstacle = xCoord-nearestObstacle.obstacle.xCoord-nearestObstacle.obstacle.width
             if distFromObstacle < minDistFromObstacle:
+                return True
+            else: return False
+        return False
+    
+    def platformTooClose(self, xCoord):
+        minDistFromPlatform = 100
+        
+        #print(nearestObstacleIndex, len(self.map.obstacleList))
+        if len(self.map.platformList) != 0: #non empty
+            nearestPlatform = self.map.platformList[-1] #most recent platform
+            distFromPlatform = xCoord-nearestPlatform.xCoord-nearestPlatform.width
+            if distFromPlatform < minDistFromPlatform:
                 return True
             else: return False
         return False

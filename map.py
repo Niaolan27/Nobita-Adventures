@@ -87,7 +87,7 @@ class Map:
     def removeObstacles(self):
         if self.obstacleList == []: return #non empty 
         firstObstacle = self.obstacleList[0]
-        if firstObstacle.obstacle.xCoord + firstObstacle.obstacle.width <= 0:
+        if firstObstacle.obstacle.xCoord + firstObstacle.obstacle.width <= -50:
             self.obstacleList.pop(0)
         #print(len(self.obstacleList))
         return
@@ -95,15 +95,15 @@ class Map:
     def removePlatforms(self):
         if self.platformList == []: return #non empty
         firstPlatform = self.platformList[0]
-        if firstPlatform.xCoord + firstPlatform.getWidthPixel(firstPlatform.width, Tile.width) <= 0:
+        if firstPlatform.xCoord + firstPlatform.getWidthPixel(firstPlatform.width, Tile.width) <= -50: #add some buffer
             self.platformList.pop(0)
-        print(len(self.platformList))
+        #print(len(self.platformList))
         return
 
     def removeTerrains(self):
         if self.terrainList == []: return #non empty
         firstTerrain = self.terrainList[0]
-        if firstTerrain.xCoord + firstTerrain.getWidthPixel(firstTerrain.width, Floor.width) <= 0:
+        if firstTerrain.xCoord + firstTerrain.getWidthPixel(firstTerrain.width, Floor.width) <= -50:
             self.terrainList.pop(0)
         return
 
@@ -150,7 +150,7 @@ class Map:
     
     def checkLegalPlatform(self, platform): #check if a piece legal
         minDistFromPlatform = 100
-        #minDistFromTerrain = 100
+        minDistFromTerrain = 100
         #check if it is far enough from other obstacles
         otherPlatforms = self.platformList
         for otherPlatform in otherPlatforms:
@@ -159,6 +159,18 @@ class Map:
 
             if platform.xCoord - otherPlatform.xCoord - otherPlatform.getWidthPixel(otherPlatform.width, Tile.width) < minDistFromPlatform:
                 return False
+            
+        nearestTerrainIndex = self.findNearestTerrain(platform.xCoord)
+
+        #check terrain before
+        try:
+            #print('checking terrain before')
+            terrainBefore = self.terrainList[nearestTerrainIndex-1]
+            distanceFromBefore = platform.xCoord - terrainBefore.xCoord - terrainBefore.getWidthPixel(terrainBefore.width, Floor.width)
+            if distanceFromBefore < minDistFromTerrain:
+                return False
+        except IndexError:
+            pass
         return True
     
     def findNearestTerrain(self,xCoord):

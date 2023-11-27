@@ -39,8 +39,12 @@ def onKeyPress(app, key):
         app.paused = not app.paused
     if key == 'up':
         #print('jump')
-        app.player.isJumping = True
-        app.player.vy = -20 #give player a boost upwards
+        if app.player.isJumping == False:
+            app.player.isJumping = True
+            app.player.vy = -20 #give player a boost upwards
+        elif not app.player.isDoubleJumping:
+            app.player.isDoubleJumping = True
+            app.player.vy = -20
     if key == 's':
         takeStep(app)
 
@@ -86,6 +90,9 @@ def takeStep(app):
         platform.updateXCoord(-app.player.vx)
     for terrain in terrains:
         terrain.updateXCoord(-app.player.vx)
+    # print(f'player x: {app.player.x}, player y: {app.player.y}')
+    # print(f'player vx: {app.player.vx}, player vy: {app.player.vy}')
+    # print(f'player ax: {app.player.ax}, player ay: {app.player.ay}')
     
 
 def main():
