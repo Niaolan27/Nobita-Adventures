@@ -14,7 +14,6 @@ def onAppStart(app):
     app.map = Map(canvas = (app.width,app.height))
     app.player = Player(app.map)
     app.stepsPerSecond = 25
-    app.stepSize = 10
     app.paused = False
     app.startTime = time.time()
     
@@ -54,7 +53,7 @@ def takeStep(app):
 
     #condition for generating terrain is different
     #check if there is any terrain at the border of the canvas
-    borderYCoord = app.map.findTerrainHeight(app.width + app.stepSize)
+    borderYCoord = app.map.findTerrainHeight(app.width + app.player.vx)
     #print(borderYCoord)
     if borderYCoord == None: 
         app.map.createTerrain(start = False)
@@ -82,11 +81,11 @@ def takeStep(app):
     platforms = app.map.platformList
     terrains = app.map.terrainList
     for obstacle in obstacles:
-        obstacle.updateXCoord(-app.stepSize)
+        obstacle.updateXCoord(-app.player.vx)
     for platform in platforms:
-        platform.updateXCoord(-app.stepSize)
+        platform.updateXCoord(-app.player.vx)
     for terrain in terrains:
-        terrain.updateXCoord(-app.stepSize)
+        terrain.updateXCoord(-app.player.vx)
     
 
 def main():

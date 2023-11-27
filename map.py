@@ -89,7 +89,7 @@ class Map:
         firstObstacle = self.obstacleList[0]
         if firstObstacle.obstacle.xCoord + firstObstacle.obstacle.width <= 0:
             self.obstacleList.pop(0)
-        print(len(self.obstacleList))
+        #print(len(self.obstacleList))
         return
 
     def removePlatforms(self):
@@ -113,15 +113,15 @@ class Map:
                 return terrain.yCoord
         return None
     
-    def findPlatformHeight(self, xCoord):
-        for platform in self.platformList:
-            #check if the back of player is on the platform
-            if platform.xCoord <= xCoord <= platform.xCoord + platform.getWidthPixel(platform.width, Tile.width):
-                return platform.yCoord
-            #check if the front of player is on the platform
-            elif platform.xCoord <= xCoord + Player.width <= platform.xCoord + platform.getWidthPixel(platform.width, Tile.width):
-                return platform.yCoord
-        return None
+    # def findPlatformHeight(self, xCoord):
+    #     for platform in self.platformList:
+    #         #check if the back of player is on the platform
+    #         if platform.xCoord <= xCoord <= platform.xCoord + platform.getWidthPixel(platform.width, Tile.width):
+    #             return platform.yCoord
+    #         #check if the front of player is on the platform
+    #         elif platform.xCoord <= xCoord + Player.width <= platform.xCoord + platform.getWidthPixel(platform.width, Tile.width):
+    #             return platform.yCoord
+    #     return None
     
     def checkLegalObstacle(self, obstacle): #check if a piece legal
         minDistFromObstacle = 100
@@ -180,7 +180,20 @@ class Map:
                 shortestDistance = distance
                 nearestIndex = obstacleIndex
         return nearestIndex
-        
+    
+    def findNextObstacle(self, xCoord):
+        obstacles = self.obstacleList
+        for obstacleIndex in range(len(obstacles)):
+            obstacle = obstacles[obstacleIndex]
+            if obstacle.obstacle.xCoord >= xCoord:
+                return obstacle
+
+    def findNextPlatform(self, xCoord):
+        platforms = self.platformList
+        for platformIndex in range(len(platforms)):
+            platform = platforms[platformIndex]
+            if platform.xCoord >= xCoord:
+                return platform
 
 
 class Canvas: 
