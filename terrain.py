@@ -14,7 +14,7 @@ class Terrain:
             #print('obstacle too close')
             self.height = self.map.terrainList[-1].height
         else:
-            if height == 0: self.height = random.randint(1,3) #height not specified   
+            if height == 0: self.height = random.randint(1,3) #height specified at 2 blocks  
             else: self.height = height
 
         self.xCoord = xCoord 

@@ -7,7 +7,7 @@ import random
 
 
 def onAppStart(app):
-    app.seed = 0
+    app.seed = 2
     random.seed(app.seed)
     app.width = 600
     app.height = 400
@@ -84,6 +84,8 @@ def takeStep(app):
     obstacles = app.map.obstacleList
     platforms = app.map.platformList
     terrains = app.map.terrainList
+    # print(f'player vx: {app.player.vx}')
+    # print(f'player x:{app.player.x}')
     for obstacle in obstacles:
         obstacle.updateXCoord(-app.player.vx)
     for platform in platforms:

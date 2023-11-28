@@ -165,9 +165,18 @@ class Map:
         #check terrain before
         try:
             #print('checking terrain before')
+            
             terrainBefore = self.terrainList[nearestTerrainIndex-1]
+            
             distanceFromBefore = platform.xCoord - terrainBefore.xCoord - terrainBefore.getWidthPixel(terrainBefore.width, Floor.width)
             if distanceFromBefore < minDistFromTerrain:
+                return False
+        except IndexError:
+            pass
+        try:
+            terrainAfter = self.terrainList[nearestTerrainIndex+1]
+            distanceFromAfter = terrainAfter.xCoord - platform.xCoord - platform.getWidthPixel(platform.width, Tile.width)
+            if distanceFromAfter < minDistFromTerrain:
                 return False
         except IndexError:
             pass
