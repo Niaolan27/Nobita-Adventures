@@ -3,6 +3,9 @@ from cmu_graphics import *
 from map import Map
 from player import Player
 import random
+import level
+from gamePlatform import *
+from terrain import *
 
 
 
@@ -36,6 +39,9 @@ def redrawAll(app):
         platform.drawPlatform()
     if app.finishLine:
         app.map.finishLine.draw()
+    if app.gameOver:
+        drawLabel(f'You finished the game in {app.timeTaken} seconds!', app.width//2, app.height//2)
+        drawLabel(f'You got {app.stars} stars!', app.width//2, app.height//2 + 20)
     
     
 
@@ -103,14 +109,20 @@ def takeStep(app):
         platform.updateXCoord(-app.player.vx)
     for terrain in terrains:
         terrain.updateXCoord(-app.player.vx)
+
+
+    # if the game has finished
     if app.finishLine:
         #print(app.map.finishLine.xCoord)
         app.map.finishLine.updateXCoord(-app.player.vx)
         ifFinished = app.map.checkIfFinishLinePassed(app.player)
         if ifFinished:
             print('finished')
+            app.endTime = time.time()
+            app.timeTaken = app.endTime - app.startTime
             app.paused = True
             app.gameOver = True
+            app.stars = level.calculateStars(app.map.totalDistance*Floor.width, app.player.speed * app.stepsPerSecond, app.timeTaken)
     # print(f'player x: {app.player.x}, player y: {app.player.y}')
     # print(f'player vx: {app.player.vx}, player vy: {app.player.vy}')
     # print(f'player ax: {app.player.ax}, player ay: {app.player.ay}')

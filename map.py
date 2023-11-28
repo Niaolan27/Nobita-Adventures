@@ -4,6 +4,7 @@ from gamePlatform import *
 from obstacles import *
 from terrain import *
 from player import *
+from level import *
 
 class Map:
     def __init__(self, canvas = None):
@@ -246,4 +247,4 @@ class FinishLine:
 
     def draw(self):
         drawRect(self.xCoord, self.yCoord, self.width, self.height)
-        drawLabel('Finish Line', self.xCoord, self.yCoord)
+        drawLabel('Finish Line', self.xCoord + self.width//2, self.yCoord - 50, align = 'center')

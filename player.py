@@ -46,11 +46,11 @@ class Player:
             return
             
         if ifCollidedWithPlatform:
-            print('collided with platform')
+            #print('collided with platform')
             platformHeight = collidedPlatform.yCoord
             platformXCoord = collidedPlatform.xCoord
             if platformCollisionDirection == 'top':
-                print('collided from top')
+                #print('collided from top')
                 self.x -= Player.speed #undo the step forward
                 self.vx = Player.speed
                 self.y = platformHeight - Tile.height
@@ -59,14 +59,14 @@ class Player:
                 self.isJumping = False
                 self.isDoubleJumping = False
             elif platformCollisionDirection == 'bottom':
-                print('collided from bottom')
+                #print('collided from bottom')
                 self.x -= Player.speed
                 self.vx = Player.speed
                 self.y = platformHeight + self.height
                 self.vy = self.ay
                 self.ax = 0
             else:
-                print('collided from front')
+                #print('collided from front')
                 self.x -= Player.speed
                 self.y -= self.vy
                 self.vx = 0
