@@ -12,6 +12,7 @@ class Map:
         self.terrainList = []
         self.obstacleList = []
         self.platformList = []
+        self.totalDistance = 0
         self.createMap()
 
     def createMap(self): #generates a map with obstacles and platforms -> can include parameter for level difficulty
@@ -83,6 +84,11 @@ class Map:
             #create a terrain to add onto the map
             terrain = Terrain(map = self, xCoord = self.canvas.canvasWidth)
         self.terrainList.append(terrain)
+        self.totalDistance += terrain.width
+    
+    def createFinishLine(self):
+        self.finishLine = FinishLine(self.canvas.canvasWidth, self.findTerrainHeight(self.canvas.canvasWidth))
+
 
     def removeObstacles(self):
         if self.obstacleList == []: return #non empty 
@@ -215,9 +221,29 @@ class Map:
             platform = platforms[platformIndex]
             if platform.xCoord >= xCoord:
                 return platform
+    
+    def checkIfFinishLinePassed(self, player):
+        if player.x > self.finishLine.xCoord:
+            return True
+        return False
 
 
 class Canvas: 
     def __init__(self, canvasWidth, canvasHeight):
         self.canvasWidth = canvasWidth
         self.canvasHeight = canvasHeight
+
+class FinishLine:
+    def __init__(self, xCoord, yCoord):
+        self.xCoord = xCoord
+        self.yCoord = yCoord
+        self.width = 50
+        self.height = 50
+    
+    def updateXCoord(self, step):
+        self.xCoord += step
+        #print(self.xCoord)
+
+    def draw(self):
+        drawRect(self.xCoord, self.yCoord, self.width, self.height)
+        drawLabel('Finish Line', self.xCoord, self.yCoord)

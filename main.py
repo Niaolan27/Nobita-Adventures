@@ -15,7 +15,10 @@ def onAppStart(app):
     app.player = Player(app.map)
     app.stepsPerSecond = 25
     app.paused = False
+    app.gameOver = False
     app.startTime = time.time()
+    app.finishLine = False
+    app.finishDistance = 50 #number of blocks
     
     #app.generateInterval = 2
 
@@ -31,6 +34,8 @@ def redrawAll(app):
         obstacle.drawObstacle()
     for platform in platforms: #draws each platform
         platform.drawPlatform()
+    if app.finishLine:
+        app.map.finishLine.draw()
     
     
 
@@ -63,16 +68,22 @@ def takeStep(app):
         app.map.createTerrain(start = False)
 
     #randomly generate obstacles and platforms
-    obstacleProb = [0.9, 0.1]
-    obstacleType = [False, True]
-    obstacleBool = random.choices(obstacleType, weights = obstacleProb)[0]
-    if obstacleBool:
-        app.map.createObstacle()
-    platformProb = [0.9, 0.1]
-    platformType = [False, True]
-    platformBool = random.choices(platformType, weights = platformProb)[0]
-    if platformBool:
-        app.map.createPlatform()
+    if not app.finishLine:
+        obstacleProb = [0.9, 0.1]
+        obstacleType = [False, True]
+        obstacleBool = random.choices(obstacleType, weights = obstacleProb)[0]
+        if obstacleBool:
+            app.map.createObstacle()
+        platformProb = [0.9, 0.1]
+        platformType = [False, True]
+        platformBool = random.choices(platformType, weights = platformProb)[0]
+        if platformBool:
+            app.map.createPlatform()
+
+    #create finish line if needed
+    if app.map.totalDistance > app.finishDistance and not app.finishLine:
+        app.map.createFinishLine()
+        app.finishLine = True
     
     #remove platforms, obstacles and terrains which are off the canvas
     app.map.removePlatforms()
@@ -92,6 +103,14 @@ def takeStep(app):
         platform.updateXCoord(-app.player.vx)
     for terrain in terrains:
         terrain.updateXCoord(-app.player.vx)
+    if app.finishLine:
+        #print(app.map.finishLine.xCoord)
+        app.map.finishLine.updateXCoord(-app.player.vx)
+        ifFinished = app.map.checkIfFinishLinePassed(app.player)
+        if ifFinished:
+            print('finished')
+            app.paused = True
+            app.gameOver = True
     # print(f'player x: {app.player.x}, player y: {app.player.y}')
     # print(f'player vx: {app.player.vx}, player vy: {app.player.vy}')
     # print(f'player ax: {app.player.ax}, player ay: {app.player.ay}')
