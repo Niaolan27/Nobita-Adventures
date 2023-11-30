@@ -2,12 +2,20 @@ from cmu_graphics import *
 from terrain import *
 from gamePlatform import *
 from obstacles import *
+from PIL import Image
+import os, pathlib
+import time
+
 
 class Player:
     height = 50
     width = 50
     speed = 10
     climbingSpeed = 1
+    cadence = 5
+    playerRunImage1 = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/doraemon_run1.png')
+    playerRunImage2 = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/doraemon_run2.png')
+    playerDeadImage = getCMUImage('/users/Jason/CMU/15112/Term Project/Speedrunners/Images/doraemon_dead.png')
     def __init__(self, map):
         self.height = Player.height
         self.width = Player.width
@@ -18,11 +26,16 @@ class Player:
         self.vy = 0
         self.ax = 0
         self.ay = 2
+        self.dead = False
         self.isJumping = False
         self.isDoubleJumping = False
+        self.cadence = Player.cadence
+        self.playerRunImage1 = Player.playerRunImage1
+        self.playerRunImage2 = Player.playerRunImage2
 
     def updatePosition(self):
         #take a step and check the legality of the move
+        self.dead = False #revive
         self.y += self.vy
         self.x += Player.speed
         self.vy += self.ay
@@ -75,23 +88,31 @@ class Player:
             return
 
         if ifCollidedWithObstacle:
+            if type(collidedObstacle.obstacle) == Square: 
             #print('collided with obstacle')
-            if obstacleCollisionDirection == 'front': #TODO
-                #print('collided from front')
-                self.x -= Player.speed
-                self.vx = 0
-                self.ax = 0
-            else:
-                #print('collided from top')
-                self.x -= Player.speed
-                self.vx = Player.speed
-                self.y = collidedObstacle.obstacle.yCoord - collidedObstacle.obstacle.height
-                self.vy = 0
-                self.ax = 0
-            return
+                if obstacleCollisionDirection == 'front': #TODO
+                    #print('collided from front')
+                    self.x -= Player.speed
+                    self.vx = 0
+                    self.ax = 0
+                else:
+                    #print('collided from top')
+                    self.x -= Player.speed
+                    self.vx = Player.speed
+                    self.y = collidedObstacle.obstacle.yCoord - collidedObstacle.obstacle.height
+                    self.vy = 0
+                    self.ax = 0
+                return
+            elif type(collidedObstacle.obstacle) == Fire:
+                self.die()
         else:
             self.x-=Player.speed
             self.vx = Player.speed
+    
+    def die(self):
+        self.vx = 0
+        self.dead = True
+
 
     def checkIfCollideWithTerrain(self):
         try:
@@ -175,6 +196,14 @@ class Player:
             return True, terrainHeight
         return False, 0
     
-    def drawPlayer(self):
-        drawRect(self.x, self.y-self.height, self.width, self.height, fill = 'yellow', border='black')
+    def drawPlayer(self, imageIndex):
+        if imageIndex == 0:
+            drawImage(self.playerRunImage1, self.x, self.y-self.height, width = self.width, height = self.height)
+        else:
+            drawImage(self.playerRunImage2, self.x, self.y-self.height, width = self.width, height = self.height)
+        #drawRect(self.x, self.y-self.height, self.width, self.height, fill = 'yellow', border='black')
     
+    def drawDeadPlayer(self):
+        drawImage(self.playerDeadImage, self.x, self.y-self.height, width = self.width, height = self.height)
+    
+#https://realpython.com/python-sleep/

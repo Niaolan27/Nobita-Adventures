@@ -1,25 +1,29 @@
-import random
 from cmu_graphics import *
 from gamePlatform import *
 from obstacles import *
 from terrain import *
 from player import *
 from level import *
+from imageHandling import *
+from PIL import Image
+import random
+import os, pathlib
 
 class Map:
-    def __init__(self, canvas = None):
+    def __init__(self, app, canvas = None):
         #print(canvas[0], canvas[1])
         self.canvas = Canvas(canvas[0], canvas[1]) #generate a long canvas -> can change the length of canvas to make game longer or shorter
         self.terrainList = []
         self.obstacleList = []
         self.platformList = []
         self.totalDistance = 0
-        self.createMap()
-
-    def createMap(self): #generates a map with obstacles and platforms -> can include parameter for level difficulty
-        self.createTerrain(start=True)
-        self.createObstacle(start=True)
-        self.createPlatform(start=True)
+        self.background = app.levelSelected.background
+        self.createMap(app)
+    
+    def createMap(self, app): #generates a map with obstacles and platforms -> can include parameter for level difficulty
+        self.createTerrain(app, start=True)
+        self.createObstacle(app, start=True)
+        self.createPlatform(app, start=True)
 
         # #creates obstacles
         # for index in range(self.numberObstacles):
@@ -38,7 +42,7 @@ class Map:
         #     platformYCoord = self.terrain.findYCoord(platformXCoord) #yCoord of the surface of the terrain
         #     self.createPlatform(platformXCoord, platformYCoord)
         
-    def createPlatform(self, start=False):
+    def createPlatform(self, app, start=False):
         if start == True:
             xMin = 0
             xMax = self.canvas.canvasWidth
@@ -56,7 +60,7 @@ class Map:
             if self.checkLegalPlatform(platform):
                 self.platformList.append(platform)
 
-    def createObstacle(self, start=False):
+    def createObstacle(self, app, start=False):
         if start == True:
             for i in range(3):
                 xMin = i*self.canvas.canvasWidth//3
@@ -76,7 +80,7 @@ class Map:
             if self.checkLegalObstacle(obstacle):
                 self.obstacleList.append(obstacle)
     
-    def createTerrain(self, start=False):
+    def createTerrain(self, app, start=False):
         if start == True:
             #create a starting terrain
             numBlocks = self.canvas.canvasWidth//Floor.width
@@ -87,8 +91,8 @@ class Map:
         self.terrainList.append(terrain)
         self.totalDistance += terrain.width
     
-    def createFinishLine(self):
-        self.finishLine = FinishLine(self.canvas.canvasWidth, self.findTerrainHeight(self.canvas.canvasWidth))
+    def createFinishLine(self, app):
+        self.finishLine = FinishLine(app, self.canvas.canvasWidth, self.findTerrainHeight(self.canvas.canvasWidth))
 
 
     def removeObstacles(self):
@@ -227,6 +231,9 @@ class Map:
         if player.x > self.finishLine.xCoord:
             return True
         return False
+    
+    def drawBackground(self, app):
+        drawImage(self.background, 0, 0, width = app.width, height = app.height)
 
 
 class Canvas: 
@@ -235,7 +242,7 @@ class Canvas:
         self.canvasHeight = canvasHeight
 
 class FinishLine:
-    def __init__(self, xCoord, yCoord):
+    def __init__(self, app, xCoord, yCoord):
         self.xCoord = xCoord
         self.yCoord = yCoord
         self.width = 50

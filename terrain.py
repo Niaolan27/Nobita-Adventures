@@ -1,5 +1,7 @@
 from cmu_graphics import *
+from imageHandling import *
 import random
+
 
 class Terrain:
     #what is the terrain made of?
@@ -74,12 +76,15 @@ class Floor: #floor is a building block of terrain
     width = 50
     height = 50
     fill = 'green'
+    image = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/floor.png')
     def __init__(self, xCoord, yCoord):
+        self.image = Floor.image
         self.xCoord = xCoord
         self.yCoord = yCoord
         self.width = Floor.width
         self.height = Floor.height
-        self.fill = Floor.fill
+        #self.fill = Floor.fill
 
     def draw(self):
-        drawRect(self.xCoord, self.yCoord, self.width, self.height, fill = self.fill, border='black')
+        drawImage(self.image, self.xCoord, self.yCoord, width = self.width, height = self.height)
+        #drawRect(self.xCoord, self.yCoord, self.width, self.height, fill = self.fill, border='black')

@@ -1,4 +1,6 @@
 from cmu_graphics import *
+
+from imageHandling import *
 import random
 
 class GamePlatform:
@@ -12,6 +14,7 @@ class GamePlatform:
         else: self.width = width
         if height == None: self.height = 1
         else: self.height = height
+
     
     def drawPlatform(self):
         for rowIndex in range(self.height):
@@ -35,11 +38,14 @@ class GamePlatform:
 class Tile:
     width = 50
     height = 20
+    image = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/platform.png')
     def __init__(self, xCoord, yCoord):
+        self.image = Tile.image
         self.width = Tile.width
         self.height = Tile.height
         self.xCoord = xCoord
         self.yCoord = yCoord
 
     def draw(self):
-        drawRect(self.xCoord, self.yCoord - self.height, self.width, self.height)
+        drawImage(self.image, self.xCoord, self.yCoord-self.height, width = self.width, height = self.height)
+        #drawRect(self.xCoord, self.yCoord - self.height, self.width, self.height)
