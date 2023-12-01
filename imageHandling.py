@@ -14,12 +14,13 @@ def getCMUImage(fileName):
      return image
 
 def getCMUImageFlipped(fileName):
-     #print('image loading')
+     print('image loading')
      url = fileName
      image = openImage(url)
      image = image.transpose(Image.FLIP_LEFT_RIGHT)
      image = CMUImage(image)
      return image
+     
 
 def loadGameImages(app): #load all the game images and stores them as CMUImage
     for imageName in app.imageURL:

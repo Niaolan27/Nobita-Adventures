@@ -48,7 +48,7 @@ class Glue:
         #drawPolygon(self.xCoord, self.yCoord, self.xCoord+self.width//2, self.yCoord-self.height, self.xCoord+self.width, self.yCoord, fill = 'blue', border = 'black') #triangle
 
 class Obstacle: #defined by x Coord and obstacle type
-    obstacleProb = [0.5, 0.2, 0.3]
+    obstacleProb = [0.5, 0.4, 0.1]
     obstacleType = [Square, Fire, Glue]
     def __init__(self, map = None, xCoord = 0, yCoord = 0):
         self.map = map

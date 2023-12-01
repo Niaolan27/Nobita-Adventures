@@ -45,6 +45,7 @@ class Screen:
         drawLabel(f'{levelSelected.difficulty}', app.width//2, app.height-50, align = 'center', font = 'DORAEMON', size = 50)
         drawImage(Screen.leftArrowImage, 70, app.height - 50, width = 30, height = 30, align = 'center')
         drawImage(Screen.rightArrowImage, app.width - 70, app.height - 50, width = 30, height = 30, align = 'center')
+        drawLabel('Press Enter to start the game', app.width//2, app.height-20, font = 'DORAEMON', size = 20)
     
     def drawGameOverScreen(self, app):
         drawRect(0,0,app.width,app.height, fill = 'white', opacity = 80)

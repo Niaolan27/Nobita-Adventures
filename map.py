@@ -18,7 +18,7 @@ class Map:
         self.terrainList = []
         self.obstacleList = []
         self.platformList = []
-        self.finishDistance = 2000
+        self.finishDistance = 7000
         self.background = app.levelSelected.background
         self.createMap(app)
     
@@ -219,16 +219,18 @@ class Canvas:
         self.canvasHeight = canvasHeight
 
 class FinishLine:
+    image = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/arrow.png')
     def __init__(self, app, xCoord, yCoord):
         self.xCoord = xCoord
         self.yCoord = yCoord
         self.width = 50
         self.height = 50
+        self.image = FinishLine.image
     
     def updateXCoord(self, step):
         self.xCoord += step
-        #print(self.xCoord)
 
     def draw(self):
-        drawRect(self.xCoord, self.yCoord, self.width, self.height)
-        drawLabel('Finish Line', self.xCoord + self.width//2, self.yCoord - 50, align = 'center')
+        #drawRect(self.xCoord, self.yCoord, self.width, self.height)
+        drawLabel('Finish Line', self.xCoord + self.width//2, 50, align = 'center', font = 'DORAEMON', size = 20)
+        drawImage(self.image, self.xCoord + self.width//2, 70, width = 20, height = 20, rotateAngle = 90, align = 'center')

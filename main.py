@@ -6,6 +6,7 @@ from gamePlatform import *
 from terrain import *
 from imageHandling import *
 from screen import *
+from soundHandling import *
 import time
 import random
 
@@ -16,7 +17,9 @@ def onAppStart(app):
     app.levelsAvailable = {'easy'}
     app.levelStars = {'easy': 0, 'medium': 0, 'hard': 0}
     loadScreen(app)
+    #loadSound(app)
     app.screen.loadSplashScreen(app)
+    #app.sound.playSplashScreenSound(app)
     startGame(app)
 
 def startGame(app):
@@ -33,8 +36,6 @@ def startGame(app):
     
     
     #game features initialization
-    
-    app.finishDistance = 5 #number of blocks
     app.startGame = False
     app.levelDifficulty = ['easy', 'medium', 'hard']
     app.levels = []
@@ -135,6 +136,7 @@ def onStep(app):
 def takeStep(app):
     
     if app.startGame:
+        #print(len(app.map.obstacleList), len(app.map.platformList), len(app.map.terrainList))
 
         #condition for generating terrain is different
         #check if there is any terrain at the border of the canvas
@@ -202,6 +204,9 @@ def loadLevels(app):
     for difficulty in app.levelDifficulty:
         app.levels.append(Level(difficulty))
 
+def loadSound(app):
+    app.sound = Sound()
+
 
 
 def main():
@@ -228,5 +233,6 @@ if __name__ == '__main__':
 #https://stackoverflow.com/questions/45310254/fixed-digits-after-decimal-with-f-strings -> rounding with f string
 #https://realpython.com/python-timer/
 #https://www.w3schools.com/python/ref_random_choices.asp
-#CMU Graphics Image Handling Demo from Piazza
+#CMU Graphics Image Handling Demo from Piazza -> link piazza post
+#https://piazza.com/class/lkq6ivek5cg1bc/post/2147
 #https://www.w3schools.com/python/python_try_except.asp

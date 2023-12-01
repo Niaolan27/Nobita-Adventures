@@ -22,10 +22,10 @@ class Level:
     hardBackground = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/backgrounds/hardBackground.png')
     obstacleClassProb = {'easy': [0.95, 0.05],
                          'medium': [0.8, 0.2],
-                         'hard': [0.5, 0.5]}
+                         'hard': [0.6, 0.4]}
     platformClassProb = {'easy': [0.95, 0.05],
-                         'medium': [0.9, 0.1],
-                         'hard': [0.8, 0.2]}
+                         'medium': [0.95, 0.05],
+                         'hard': [0.95, 0.05]}
     def __init__(self, difficulty):
         self.difficulty = difficulty
         if difficulty == 'easy':
