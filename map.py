@@ -27,23 +27,6 @@ class Map:
         self.createObstacle(app, start=True)
         self.createPlatform(app, start=True)
         self.createFinishLine(app)
-
-        # #creates obstacles
-        # for index in range(self.numberObstacles):
-        #     obstacleXMin = index*self.obstacleInterval 
-        #     obstacleXMax = obstacleXMin + self.obstacleInterval
-        #     obstacleXCoord = random.randint(obstacleXMin, obstacleXMax)
-        #     #check through the terrain and check what is the yCoord of the terrain at that xCoord
-        #     obstacleYCoord = self.terrain.findYCoord(obstacleXCoord) #yCoord of the surface of the terrain
-        #     if obstacleYCoord == None: raise ValueError('No Y Coordinate found for terrain')
-        #     self.createObstacle(obstacleXCoord, obstacleYCoord)
-        # #creates platforms
-        # for index in range(self.numberPlatforms):
-        #     platformXMin = index*self.platformInterval 
-        #     platformXMax = platformXMin + self.platformInterval
-        #     platformXCoord = random.randint(platformXMin, platformXMax)
-        #     platformYCoord = self.terrain.findYCoord(platformXCoord) #yCoord of the surface of the terrain
-        #     self.createPlatform(platformXCoord, platformYCoord)
         
     def createPlatform(self, app, start=False):
         if start == True:
@@ -127,16 +110,6 @@ class Map:
             if terrain.xCoord <= xCoord <= terrain.xCoord + terrain.getWidthPixel(terrain.width, Floor.width):
                 return terrain.yCoord
         return None
-    
-    # def findPlatformHeight(self, xCoord):
-    #     for platform in self.platformList:
-    #         #check if the back of player is on the platform
-    #         if platform.xCoord <= xCoord <= platform.xCoord + platform.getWidthPixel(platform.width, Tile.width):
-    #             return platform.yCoord
-    #         #check if the front of player is on the platform
-    #         elif platform.xCoord <= xCoord + Player.width <= platform.xCoord + platform.getWidthPixel(platform.width, Tile.width):
-    #             return platform.yCoord
-    #     return None
     
     def checkLegalObstacle(self, obstacle): #check if a piece legal
         minDistFromObstacle = 100

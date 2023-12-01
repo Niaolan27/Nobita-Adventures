@@ -45,17 +45,7 @@ class Screen:
         drawLabel(f'{levelSelected.difficulty}', app.width//2, app.height-50, align = 'center', font = 'DORAEMON', size = 50)
         drawImage(Screen.leftArrowImage, 70, app.height - 50, width = 30, height = 30, align = 'center')
         drawImage(Screen.rightArrowImage, app.width - 70, app.height - 50, width = 30, height = 30, align = 'center')
-        # for gameLevelIndex in range(len(app.levels)):
-        #     gameLevel = app.levels[gameLevelIndex]
-        #     if gameLevelIndex == app.levelSelectedIndex:
-        #         borderColor = 'red'
-        #         borderWidth = 5 
-        #     else:
-        #         borderColor = 'black'
-        #         borderWidth = 1
-        #     drawRect((gameLevelIndex+1)*app.width//4, app.height//2, 100, 100, align = 'center', fill = None, border = borderColor, borderWidth = borderWidth)
-        #     #drawLabel(gameLevel.difficulty, (gameLevelIndex+1)*app.width//4, app.height//2, align = 'center')
-        #     drawImage(app.levels[gameLevelIndex].background, (gameLevelIndex+1)*app.width//4, app.height//2, align = 'center', width = 100, height = 100)
+    
     def drawGameOverScreen(self, app):
         drawRect(0,0,app.width,app.height, fill = 'white', opacity = 80)
         drawLabel(f'You finished the game in {app.timeTaken:.2f} seconds!', app.width//2, app.height//2, font = 'DORAEMON', size = 20)

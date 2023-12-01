@@ -1,6 +1,7 @@
 from cmu_graphics import *
 from imageHandling import *
 import random
+
 class Square:
     width = 50
     height = 50

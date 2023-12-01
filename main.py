@@ -1,4 +1,3 @@
-
 from cmu_graphics import *
 from map import Map
 from player import Player
@@ -13,16 +12,6 @@ import random
 
 
 def onAppStart(app):
-    # app.imageURL = {
-    #     'playerRun1': '/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/doraemon_transparent.png',
-    #     'playerRun2' : '/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/doraemon_run2.png',
-    #     'background': '/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/background.png',
-    #     'tile': '/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/tile.png',
-    #     'platform': '/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/platform.png',
-    # }
-    #app.imageDict = dict()
-    #loadGameImages(app)
-    #implement some sort of account
     app.seed = 2
     app.levelsAvailable = {'easy'}
     app.levelStars = {'easy': 0, 'medium': 0, 'hard': 0}
@@ -66,24 +55,12 @@ def redrawAll(app):
 
     elif app.showStartScreen:
         app.screen.drawStartScreen(app)
-        # for gameLevelIndex in range(len(app.levels)):
-        #     gameLevel = app.levels[gameLevelIndex]
-        #     if gameLevelIndex == app.levelSelectedIndex:
-        #         borderColor = 'red'
-        #         borderWidth = 5 
-        #     else:
-        #         borderColor = 'black'
-        #         borderWidth = 1
-        #     drawRect((gameLevelIndex+1)*app.width//4, app.height//2, 100, 100, align = 'center', fill = None, border = borderColor, borderWidth = borderWidth)
-        #     #drawLabel(gameLevel.difficulty, (gameLevelIndex+1)*app.width//4, app.height//2, align = 'center')
-        #     drawImage(app.levels[gameLevelIndex].background, (gameLevelIndex+1)*app.width//4, app.height//2, align = 'center', width = 100, height = 100)
         
     if app.startGame:
         obstacles = app.map.obstacleList
         platforms = app.map.platformList
         terrains = app.map.terrainList
         app.map.drawBackground(app) #TODO
-        #print(app.player.dead)
         if not app.player.dead:
             if app.stepCounter // app.player.cadence % 2 == 0:
                 app.player.drawPlayer(0)
@@ -106,9 +83,6 @@ def redrawAll(app):
     if app.gameOver:
         app.screen.drawGameOverScreen(app)
         
-    
-    
-
 def onKeyPress(app, key):
     #for start screen
     if app.splashScreen:
@@ -161,16 +135,11 @@ def onStep(app):
 def takeStep(app):
     
     if app.startGame:
-        #print(len(app.map.terrainList))
-        #revive the dead player?
-        # if app.player.dead:
-        #     app.player.dead = False
-        #     print(app.player.dead)
 
         #condition for generating terrain is different
         #check if there is any terrain at the border of the canvas
         borderYCoord = app.map.findTerrainHeight(app.width + app.player.vx)
-        #print(borderYCoord)
+    
         if borderYCoord == None: 
             app.map.createTerrain(app, start = False)
 
@@ -199,8 +168,6 @@ def takeStep(app):
         obstacles = app.map.obstacleList
         platforms = app.map.platformList
         terrains = app.map.terrainList
-        # print(f'player vx: {app.player.vx}')
-        # print(f'player x:{app.player.x}')
         for obstacle in obstacles:
             obstacle.updateXCoord(-app.player.vx)
         for platform in platforms:
@@ -211,7 +178,6 @@ def takeStep(app):
 
         ifFinished = app.map.checkIfFinishLinePassed(app.player)
         if ifFinished:
-            #print('finished')
             app.gameOver = True
             app.paused = True
             app.endTime = time.time()
@@ -246,14 +212,21 @@ if __name__ == '__main__':
 
 
 #CITATIONS
+#SPRITES
 #https://fontmeme.com/fonts/doraemon-font/
 #https://www.spriters-resource.com/snes/doraemon2nobitanotoyslanddaiboukenjpn/sheet/84517/
 #https://www.spriters-resource.com/nintendo_switch/doraemonnobitasbrainexerciseadventure/sheet/201368/
 #https://www.spriters-resource.com/pc_computer/platagosuperplatformgamemaker/sheet/103669/
 #https://www.spriters-resource.com/mobile/doraemonrepairshop/sheet/161998/
-#https://www.w3schools.com/python/ref_random_seed.asp
-#https://stackoverflow.com/questions/45310254/fixed-digits-after-decimal-with-f-strings -> rounding with f string
 #https://www.spriters-resource.com/pc_computer/amongus/sheet/194022/
 #https://www.spriters-resource.com/mobile/doraemonrepairshop/sheet/162101/
 #https://www.spriters-resource.com/mobile/megarunredfordsadventure/sheet/58884/
 #https://www.spriters-resource.com/mobile/doraemonrepairshop/sheet/161988/
+
+#CODE RELATED
+#https://www.w3schools.com/python/ref_random_seed.asp
+#https://stackoverflow.com/questions/45310254/fixed-digits-after-decimal-with-f-strings -> rounding with f string
+#https://realpython.com/python-timer/
+#https://www.w3schools.com/python/ref_random_choices.asp
+#CMU Graphics Image Handling Demo from Piazza
+#https://www.w3schools.com/python/python_try_except.asp
