@@ -6,7 +6,7 @@ from level import *
 from gamePlatform import *
 from terrain import *
 from imageHandling import *
-import screen as screen
+from screen import *
 import time
 import random
 
@@ -23,6 +23,11 @@ def onAppStart(app):
     #app.imageDict = dict()
     #loadGameImages(app)
     #implement some sort of account
+    app.seed = 2
+    app.levelsAvailable = {'easy'}
+    app.levelStars = {'easy': 0, 'medium': 0, 'hard': 0}
+    loadScreen(app)
+    app.screen.loadSplashScreen(app)
     startGame(app)
 
 def startGame(app):
@@ -33,21 +38,21 @@ def startGame(app):
     app.gameOver = False
 
     #map initialization
-    app.seed = 2
     random.seed(app.seed)
     app.width = 600
     app.height = 400
     
     
     #game features initialization
-    app.finishLineCreated = False
-    app.finishDistance = 50 #number of blocks
+    
+    app.finishDistance = 5 #number of blocks
     app.startGame = False
     app.levelDifficulty = ['easy', 'medium', 'hard']
     app.levels = []
     app.levelSelectedIndex = 0
     app.startTime = time.time()
-    loadStartScreen(app)
+    loadLevels(app)
+    app.showStartScreen = True
 
 
     
@@ -56,9 +61,11 @@ def startGame(app):
 
 def redrawAll(app):
     #draw start screen
-    
-    if app.showStartScreen:
-        app.startScreen.drawStartScreen(app)
+    if app.splashScreen:
+        app.screen.drawSplashScreen(app)
+
+    elif app.showStartScreen:
+        app.screen.drawStartScreen(app)
         # for gameLevelIndex in range(len(app.levels)):
         #     gameLevel = app.levels[gameLevelIndex]
         #     if gameLevelIndex == app.levelSelectedIndex:
@@ -84,25 +91,30 @@ def redrawAll(app):
                 app.player.drawPlayer(1)
         else:
             app.player.drawDeadPlayer()
-            time.sleep(1)
+            
+
+
+
         for terrain in terrains:
             terrain.drawTerrain()
         for obstacle in obstacles: #draws each obstacle
             obstacle.drawObstacle()
         for platform in platforms: #draws each platform
             platform.drawPlatform()
-        if app.finishLineCreated:
-            app.map.finishLine.draw()
+        app.map.finishLine.draw()
 
     if app.gameOver:
-        screen.drawGameOverScreen(app)
+        app.screen.drawGameOverScreen(app)
         
     
     
 
 def onKeyPress(app, key):
     #for start screen
-    if app.showStartScreen:
+    if app.splashScreen:
+        if key == 'enter':
+            app.splashScreen = False
+    elif app.showStartScreen:
         if key == 'right':
             if app.levelSelectedIndex < len(app.levels) - 1:
                 app.levelSelectedIndex += 1
@@ -110,14 +122,15 @@ def onKeyPress(app, key):
             if app.levelSelectedIndex > 0:
                 app.levelSelectedIndex -= 1
         elif key == 'enter':
-            app.showStartScreen = False
-            app.startGame = True
-            app.levelSelected = app.levels[app.levelSelectedIndex]
+            if app.levels[app.levelSelectedIndex].difficulty in app.levelsAvailable:
+                app.showStartScreen = False
+                app.startGame = True
+                app.levelSelected = app.levels[app.levelSelectedIndex]
         if app.startGame:
             #start laoding gameplay
             app.map = Map(app, canvas = (app.width,app.height))
             #create the game player
-            app.player = Player(app.map)
+            app.player = Player(app)
 
     #for game play
     if app.startGame and not app.gameOver:
@@ -125,12 +138,13 @@ def onKeyPress(app, key):
             app.paused = not app.paused
         if key == 'up':
             #print('jump')
-            if app.player.isJumping == False:
-                app.player.isJumping = True
-                app.player.vy = -20 #give player a boost upwards
-            elif not app.player.isDoubleJumping:
-                app.player.isDoubleJumping = True
-                app.player.vy = -20
+            if not app.player.stuck:
+                if app.player.isJumping == False:
+                    app.player.isJumping = True
+                    app.player.vy = -20 #give player a boost upwards
+                elif not app.player.isDoubleJumping:
+                    app.player.isDoubleJumping = True
+                    app.player.vy = -20
         if key == 's':
             takeStep(app)
     
@@ -145,8 +159,14 @@ def onStep(app):
         takeStep(app)
 
 def takeStep(app):
-
+    
     if app.startGame:
+        #print(len(app.map.terrainList))
+        #revive the dead player?
+        # if app.player.dead:
+        #     app.player.dead = False
+        #     print(app.player.dead)
+
         #condition for generating terrain is different
         #check if there is any terrain at the border of the canvas
         borderYCoord = app.map.findTerrainHeight(app.width + app.player.vx)
@@ -155,22 +175,19 @@ def takeStep(app):
             app.map.createTerrain(app, start = False)
 
         #randomly generate obstacles and platforms
-        if not app.finishLineCreated:
-            obstacleProb = app.levelSelected.obstacleProbability
-            obstacleType = [False, True]
-            obstacleBool = random.choices(obstacleType, weights = obstacleProb)[0]
-            if obstacleBool:
-                app.map.createObstacle(app)
-            platformProb = app.levelSelected.platformProbability
-            platformType = [False, True]
-            platformBool = random.choices(platformType, weights = platformProb)[0]
-            if platformBool:
-                app.map.createPlatform(app)
+        obstacleProb = app.levelSelected.obstacleProbability
+        obstacleType = [False, True]
+        obstacleBool = random.choices(obstacleType, weights = obstacleProb)[0]
+        if obstacleBool:
+            app.map.createObstacle(app)
+        platformProb = app.levelSelected.platformProbability
+        platformType = [False, True]
+        platformBool = random.choices(platformType, weights = platformProb)[0]
+        if platformBool:
+            app.map.createPlatform(app)
 
         #create finish line if needed
-        if app.map.totalDistance > app.finishDistance and not app.finishLineCreated:
-            app.map.createFinishLine(app)
-            app.finishLineCreated = True
+        #print(app.map.totalDistance, app.finishDistance)
         
         #remove platforms, obstacles and terrains which are off the canvas
         app.map.removePlatforms()
@@ -190,31 +207,34 @@ def takeStep(app):
             platform.updateXCoord(-app.player.vx)
         for terrain in terrains:
             terrain.updateXCoord(-app.player.vx)
-
-
-    # if the game has finished
-    if app.finishLineCreated and not app.gameOver:
-        #print(app.map.finishLine.xCoord)
         app.map.finishLine.updateXCoord(-app.player.vx)
+
         ifFinished = app.map.checkIfFinishLinePassed(app.player)
         if ifFinished:
-            print('finished')
+            #print('finished')
             app.gameOver = True
             app.paused = True
             app.endTime = time.time()
             app.timeTaken = app.endTime - app.startTime
-            app.stars = calculateStars(app.map.totalDistance*Floor.width, app.player.speed * app.stepsPerSecond, app.timeTaken)
+            app.stars = calculateStars(app.map.finishDistance, app.player.speed * app.stepsPerSecond, app.timeTaken)
+            if app.stars != 'failed':
+                if app.levelSelectedIndex < len(app.levels) - 1:
+                    app.levelsAvailable.add(app.levels[app.levelSelectedIndex+1].difficulty)
+                currentLevelStars = app.levelStars[app.levels[app.levelSelectedIndex].difficulty]
+                if app.stars > currentLevelStars:
+                    app.levelStars[app.levels[app.levelSelectedIndex].difficulty] = app.stars
     # print(f'player x: {app.player.x}, player y: {app.player.y}')
     # print(f'player vx: {app.player.vx}, player vy: {app.player.vy}')
     # print(f'player ax: {app.player.ax}, player ay: {app.player.ay}')
     app.stepCounter += 1
     
-def loadStartScreen(app):
-        app.showStartScreen = True
-        app.startScreen = screen.startScreen(app)
+def loadScreen(app):
+    app.showStartScreen = True
+    app.screen = Screen(app)
 
-        for difficulty in app.levelDifficulty:
-            app.levels.append(Level(difficulty))
+def loadLevels(app):
+    for difficulty in app.levelDifficulty:
+        app.levels.append(Level(difficulty))
 
 
 
@@ -232,3 +252,8 @@ if __name__ == '__main__':
 #https://www.spriters-resource.com/pc_computer/platagosuperplatformgamemaker/sheet/103669/
 #https://www.spriters-resource.com/mobile/doraemonrepairshop/sheet/161998/
 #https://www.w3schools.com/python/ref_random_seed.asp
+#https://stackoverflow.com/questions/45310254/fixed-digits-after-decimal-with-f-strings -> rounding with f string
+#https://www.spriters-resource.com/pc_computer/amongus/sheet/194022/
+#https://www.spriters-resource.com/mobile/doraemonrepairshop/sheet/162101/
+#https://www.spriters-resource.com/mobile/megarunredfordsadventure/sheet/58884/
+#https://www.spriters-resource.com/mobile/doraemonrepairshop/sheet/161988/

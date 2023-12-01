@@ -2,17 +2,17 @@ from imageHandling import *
 
 def calculateStars(distance, speed, timeTaken):
     perfectTime = distance / speed
-    print(perfectTime)
-    oneStar = perfectTime * 1.25
-    twoStar = perfectTime * 1.15
-    threeStar = perfectTime
-    print(oneStar, twoStar, threeStar)
+    #print(perfectTime)
+    oneStar = perfectTime * 1.8
+    twoStar = perfectTime * 1.5
+    threeStar = perfectTime *1.2
+    #print(oneStar, twoStar, threeStar)
     if timeTaken < threeStar:
-        return '3'
+        return 3
     elif timeTaken < twoStar:
-        return '2'
+        return 2
     elif timeTaken < oneStar:
-        return '1'
+        return 1
     else:
         return 'failed'
     

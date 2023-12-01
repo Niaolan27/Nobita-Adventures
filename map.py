@@ -12,11 +12,13 @@ import os, pathlib
 class Map:
     def __init__(self, app, canvas = None):
         #print(canvas[0], canvas[1])
+        self.app = app
+        self.removeBuffer = 200
         self.canvas = Canvas(canvas[0], canvas[1]) #generate a long canvas -> can change the length of canvas to make game longer or shorter
         self.terrainList = []
         self.obstacleList = []
         self.platformList = []
-        self.totalDistance = 0
+        self.finishDistance = 2000
         self.background = app.levelSelected.background
         self.createMap(app)
     
@@ -24,6 +26,7 @@ class Map:
         self.createTerrain(app, start=True)
         self.createObstacle(app, start=True)
         self.createPlatform(app, start=True)
+        self.createFinishLine(app)
 
         # #creates obstacles
         # for index in range(self.numberObstacles):
@@ -89,16 +92,17 @@ class Map:
             #create a terrain to add onto the map
             terrain = Terrain(map = self, xCoord = self.canvas.canvasWidth)
         self.terrainList.append(terrain)
-        self.totalDistance += terrain.width
+        #print(len(self.terrainList))
+        #self.totalDistance += terrain.width
     
     def createFinishLine(self, app):
-        self.finishLine = FinishLine(app, self.canvas.canvasWidth, self.findTerrainHeight(self.canvas.canvasWidth))
+        self.finishLine = FinishLine(app, self.finishDistance, 50)
 
 
     def removeObstacles(self):
         if self.obstacleList == []: return #non empty 
         firstObstacle = self.obstacleList[0]
-        if firstObstacle.obstacle.xCoord + firstObstacle.obstacle.width <= -50:
+        if firstObstacle.obstacle.xCoord + firstObstacle.obstacle.width <= -self.removeBuffer:
             self.obstacleList.pop(0)
         #print(len(self.obstacleList))
         return
@@ -106,7 +110,7 @@ class Map:
     def removePlatforms(self):
         if self.platformList == []: return #non empty
         firstPlatform = self.platformList[0]
-        if firstPlatform.xCoord + firstPlatform.getWidthPixel(firstPlatform.width, Tile.width) <= -50: #add some buffer
+        if firstPlatform.xCoord + firstPlatform.getWidthPixel(firstPlatform.width, Tile.width) <= -self.removeBuffer: #add some buffer
             self.platformList.pop(0)
         #print(len(self.platformList))
         return
@@ -114,7 +118,7 @@ class Map:
     def removeTerrains(self):
         if self.terrainList == []: return #non empty
         firstTerrain = self.terrainList[0]
-        if firstTerrain.xCoord + firstTerrain.getWidthPixel(firstTerrain.width, Floor.width) <= -50:
+        if firstTerrain.xCoord + firstTerrain.getWidthPixel(firstTerrain.width, Floor.width) <= -self.removeBuffer:
             self.terrainList.pop(0)
         return
 

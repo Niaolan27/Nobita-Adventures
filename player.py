@@ -11,22 +11,24 @@ class Player:
     height = 50
     width = 50
     speed = 10
-    climbingSpeed = 1
+    climbingSpeed = 10
     cadence = 5
     playerRunImage1 = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/doraemon_run1.png')
     playerRunImage2 = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/doraemon_run2.png')
     playerDeadImage = getCMUImage('/users/Jason/CMU/15112/Term Project/Speedrunners/Images/doraemon_dead.png')
-    def __init__(self, map):
+    def __init__(self, app):
+        self.app = app
+        self.map = app.map
         self.height = Player.height
         self.width = Player.width
         self.x = 50
-        self.y = map.terrainList[0].yCoord
-        self.map = map
+        self.y = app.map.terrainList[0].yCoord
         self.vx = Player.speed
         self.vy = 0
         self.ax = 0
         self.ay = 2
         self.dead = False
+        self.deadTimer = 0
         self.isJumping = False
         self.isDoubleJumping = False
         self.cadence = Player.cadence
@@ -35,83 +37,112 @@ class Player:
 
     def updatePosition(self):
         #take a step and check the legality of the move
-        self.dead = False #revive
-        self.y += self.vy
-        self.x += Player.speed
-        self.vy += self.ay
+        if self.dead: #if dead, pause for a moment
+            self.die()
+        else:
+            self.y += self.vy
+            self.x += Player.speed
+            self.vy += self.ay
 
-        #do the checks
-        ifLandedOnTerrain, heightLanded = self.checkIfLandedOnTerrain()
-        ifCollidedWithPlatform, collidedPlatform, platformCollisionDirection = self.checkIfCollidedWithPlatform()
-        ifCollidedWithObstacle, collidedObstacle, obstacleCollisionDirection = self.checkIfCollidedWithObstacle()
-        ifCollidedWithTerrain, collidedTerrain = self.checkIfCollideWithTerrain()
+            #do the checks
+            ifLandedOnTerrain, heightLanded = self.checkIfLandedOnTerrain()
+            ifCollidedWithPlatform, collidedPlatform, platformCollisionDirection = self.checkIfCollidedWithPlatform()
+            ifCollidedWithObstacle, collidedObstacle, obstacleCollisionDirection = self.checkIfCollidedWithObstacle()
+            ifCollidedWithTerrain, collidedTerrain = self.checkIfCollideWithTerrain()
 
-        if ifLandedOnTerrain:
-            self.y = heightLanded
-            self.vy = 0
-            self.isJumping = False
-            self.isDoubleJumping = False
-
-        if ifCollidedWithTerrain:
-            #print('collided with terrain')
-            self.x -= Player.speed #undo the step forward
-            self.vx = 0
-            return
-            
-        if ifCollidedWithPlatform:
-            #print('collided with platform')
-            platformHeight = collidedPlatform.yCoord
-            platformXCoord = collidedPlatform.xCoord
-            if platformCollisionDirection == 'top':
-                #print('collided from top')
-                self.x -= Player.speed #undo the step forward
-                self.vx = Player.speed
-                self.y = platformHeight - Tile.height
+            if ifLandedOnTerrain:
+                self.y = heightLanded
                 self.vy = 0
-                self.ax = 0
                 self.isJumping = False
                 self.isDoubleJumping = False
-            elif platformCollisionDirection == 'bottom':
-                #print('collided from bottom')
-                self.x -= Player.speed
-                self.vx = Player.speed
-                self.y = platformHeight + self.height
-                self.vy = self.ay
-                self.ax = 0
-            else:
-                #print('collided from front')
-                self.x -= Player.speed
-                self.y -= self.vy
-                self.vx = 0
-                self.vy = Player.climbingSpeed
-                #self.ax = 0.5
-            return
+                self.stuck = False
 
-        if ifCollidedWithObstacle:
-            if type(collidedObstacle.obstacle) == Square: 
-            #print('collided with obstacle')
-                if obstacleCollisionDirection == 'front': #TODO
-                    #print('collided from front')
-                    self.x -= Player.speed
-                    self.vx = 0
-                    self.ax = 0
-                else:
+            if ifCollidedWithTerrain:
+                #print('collided with terrain')
+                self.x -= Player.speed #undo the step forward
+                self.vx = 0
+                return
+                
+            if ifCollidedWithPlatform:
+                #print('collided with platform')
+                platformHeight = collidedPlatform.yCoord
+                platformXCoord = collidedPlatform.xCoord
+                if platformCollisionDirection == 'top':
                     #print('collided from top')
-                    self.x -= Player.speed
+                    self.x -= Player.speed #undo the step forward
                     self.vx = Player.speed
-                    self.y = collidedObstacle.obstacle.yCoord - collidedObstacle.obstacle.height
+                    self.y = platformHeight - Tile.height
                     self.vy = 0
                     self.ax = 0
+                    self.isJumping = False
+                    self.isDoubleJumping = False
+                elif platformCollisionDirection == 'bottom':
+                    #print('collided from bottom')
+                    self.x -= Player.speed
+                    self.vx = Player.speed
+                    self.y = platformHeight + self.height
+                    self.vy = self.ay
+                    self.ax = 0
+                else:
+                    #print('collided from front')
+                    self.x -= Player.speed
+                    self.y -= self.vy
+                    self.vx = 0
+                    self.vy = Player.climbingSpeed
+                    #self.ax = 0.5
                 return
-            elif type(collidedObstacle.obstacle) == Fire:
-                self.die()
-        else:
-            self.x-=Player.speed
-            self.vx = Player.speed
+
+            if ifCollidedWithObstacle:
+                if type(collidedObstacle.obstacle) == Square: 
+                #print('collided with obstacle')
+                    if obstacleCollisionDirection == 'front': #TODO
+                        #print('collided from front')
+                        self.x -= Player.speed
+                        self.vx = 0
+                        self.ax = 0
+                    else:
+                        #print('collided from top')
+                        self.x -= Player.speed
+                        self.vx = Player.speed
+                        self.y = collidedObstacle.obstacle.yCoord - collidedObstacle.obstacle.height
+                        self.vy = 0
+                        self.ax = 0
+                    return
+                elif type(collidedObstacle.obstacle) == Fire:
+                    self.x -= Player.speed
+                    self.die()
+                elif type(collidedObstacle.obstacle) == Glue:
+                    #print('glue')
+                    #print(self.vx)
+                    self.x -=Player.speed
+                    self.vx = Player.speed//3
+                    self.stuck = True
+                    
+            else:
+                self.x-=Player.speed
+                self.vx = Player.speed
     
     def die(self):
-        self.vx = 0
-        self.dead = True
+        #print(self.x)
+        if self.deadTimer < 3:
+            self.vx = 0
+            self.dead = True
+            if self.deadTimer > 0: #don't delay on the first time
+                time.sleep(0.5)
+            self.deadTimer += 1
+
+            
+        else:
+            self.vx = Player.speed
+            self.dead = False
+            self.deadTimer = 0
+            for obstacle in self.map.obstacleList: #respawn backwards
+                obstacle.updateXCoord(self.map.removeBuffer)
+            for platform in self.map.platformList:
+                platform.updateXCoord(self.map.removeBuffer)
+            for terrain in self.map.terrainList:
+                terrain.updateXCoord(self.map.removeBuffer)
+            self.map.finishLine.updateXCoord(self.map.removeBuffer)
 
 
     def checkIfCollideWithTerrain(self):
@@ -165,17 +196,20 @@ class Player:
                                 platformHeight):
                     if self.x > platform.xCoord: #either top or bottom
                         #print('top or bottom')
-                        if self.y > platform.yCoord:
+                        if self.y > platform.yCoord + 8: #impossible for a player to penetrate from the bottom with this condition
+                            #this condition is used to prevent players from phasing through from the top
                             return True, platform, 'bottom'
                         else:
                             return True, platform, 'top'
                     else:
                         #print('top bottom front')
-                        vertEdgeDistance = abs(self.x + self.width - platform.xCoord)
-                        bottomEdgeDistance = abs(self.y - platform.yCoord)
-                        topEdgeDistance = abs((self.y-self.height)-(platform.yCoord-platformHeight))
+                        vertEdgeDistance = self.x + self.width - platform.xCoord
+                        #bottomEdgeDistance = abs(self.y - platform.yCoord)
+                        #topEdgeDistance = abs((self.y-self.height)-(platform.yCoord-platformHeight))
+                        bottomEdgeDistance = platform.yCoord - (self.y-self.height)
+                        topEdgeDistance = self.y -(platform.yCoord-platformHeight)
                         #print(vertEdgeDistance, bottomEdgeDistance, topEdgeDistance)
-                        if vertEdgeDistance < bottomEdgeDistance or vertEdgeDistance < topEdgeDistance:
+                        if vertEdgeDistance < bottomEdgeDistance+10 and vertEdgeDistance < topEdgeDistance+10:
                             return True, platform, 'front'
                         else:
                             if self.y > platform.yCoord:
