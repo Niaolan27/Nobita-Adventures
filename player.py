@@ -194,28 +194,43 @@ class Player:
                                 platformCenterX, platformCenterY, 
                                 platformWidth, 
                                 platformHeight):
-                    if self.x > platform.xCoord: #either top or bottom
-                        #print('top or bottom')
-                        if self.y > platform.yCoord + 8: #impossible for a player to penetrate from the bottom with this condition
-                            #this condition is used to prevent players from phasing through from the top
-                            return True, platform, 'bottom'
-                        else:
+                    #trying with normalize
+                    horDistance = abs(playerCenterX - platformCenterX)
+                    maxHorDistance = (self.width + platformWidth)//2
+                    verDistance = abs(playerCenterY - platformCenterY)
+                    maxVerDistance = (self.height+platformHeight)//2
+                    normHorDistance = self.normalize(horDistance, maxHorDistance)
+                    normVerDistance = self.normalize(verDistance, maxVerDistance)
+                    #print(normHorDistance, normVerDistance)
+                    if normHorDistance < normVerDistance:
+                        if playerCenterY < platformCenterY:
                             return True, platform, 'top'
-                    else:
-                        #print('top bottom front')
-                        vertEdgeDistance = self.x + self.width - platform.xCoord
-                        #bottomEdgeDistance = abs(self.y - platform.yCoord)
-                        #topEdgeDistance = abs((self.y-self.height)-(platform.yCoord-platformHeight))
-                        bottomEdgeDistance = platform.yCoord - (self.y-self.height)
-                        topEdgeDistance = self.y -(platform.yCoord-platformHeight)
-                        #print(vertEdgeDistance, bottomEdgeDistance, topEdgeDistance)
-                        if vertEdgeDistance < bottomEdgeDistance+10 and vertEdgeDistance < topEdgeDistance+10:
-                            return True, platform, 'front'
                         else:
-                            if self.y > platform.yCoord:
-                                return True, platform, 'bottom'
-                            else:
-                                return True, platform, 'top'
+                            return True, platform, 'bottom'
+                    else:
+                        return True, platform, 'front'
+                    # if self.x > platform.xCoord: #either top or bottom
+                    #     #print('top or bottom')
+                    #     if self.y > platform.yCoord + 8: #impossible for a player to penetrate from the bottom with this condition
+                    #         #this condition is used to prevent players from phasing through from the top
+                    #         return True, platform, 'bottom'
+                    #     else:
+                    #         return True, platform, 'top'
+                    # else:
+                    #     #print('top bottom front')
+                    #     vertEdgeDistance = self.x + self.width - platform.xCoord
+                    #     #bottomEdgeDistance = abs(self.y - platform.yCoord)
+                    #     #topEdgeDistance = abs((self.y-self.height)-(platform.yCoord-platformHeight))
+                    #     bottomEdgeDistance = platform.yCoord - (self.y-self.height)
+                    #     topEdgeDistance = self.y -(platform.yCoord-platformHeight)
+                    #     #print(vertEdgeDistance, bottomEdgeDistance, topEdgeDistance)
+                    #     if vertEdgeDistance < bottomEdgeDistance+10 and vertEdgeDistance < topEdgeDistance+10:
+                    #         return True, platform, 'front'
+                    #     else:
+                    #         if self.y > platform.yCoord:
+                    #             return True, platform, 'bottom'
+                    #         else:
+                    #             return True, platform, 'top'
         return False, None, None
     
     @staticmethod
@@ -239,5 +254,9 @@ class Player:
     
     def drawDeadPlayer(self):
         drawImage(self.playerDeadImage, self.x, self.y-self.height, width = self.width, height = self.height)
+
+    @staticmethod
+    def normalize(value, max):
+        return value/max
     
 #https://realpython.com/python-sleep/

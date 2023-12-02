@@ -17,9 +17,9 @@ def onAppStart(app):
     app.levelsAvailable = {'easy'}
     app.levelStars = {'easy': 0, 'medium': 0, 'hard': 0}
     loadScreen(app)
-    #loadSound(app)
+    loadSound(app)
     app.screen.loadSplashScreen(app)
-    #app.sound.playSplashScreenSound(app)
+    app.sound.playSplashScreenSound()
     startGame(app)
 
 def startGame(app):
@@ -40,7 +40,6 @@ def startGame(app):
     app.levelDifficulty = ['easy', 'medium', 'hard']
     app.levels = []
     app.levelSelectedIndex = 0
-    app.startTime = time.time()
     loadLevels(app)
     app.showStartScreen = True
 
@@ -89,6 +88,8 @@ def onKeyPress(app, key):
     if app.splashScreen:
         if key == 'enter':
             app.splashScreen = False
+            app.sound.pauseSplashScreenSound()
+            app.sound.playStartingScreenSound()
     elif app.showStartScreen:
         if key == 'right':
             if app.levelSelectedIndex < len(app.levels) - 1:
@@ -101,11 +102,15 @@ def onKeyPress(app, key):
                 app.showStartScreen = False
                 app.startGame = True
                 app.levelSelected = app.levels[app.levelSelectedIndex]
+                app.sound.pauseStartingScreenSound()
+                
         if app.startGame:
             #start laoding gameplay
             app.map = Map(app, canvas = (app.width,app.height))
             #create the game player
             app.player = Player(app)
+            app.startTime = time.time()
+            app.sound.playLevelScreenSound()
 
     #for game play
     if app.startGame and not app.gameOver:
@@ -136,6 +141,7 @@ def onStep(app):
 def takeStep(app):
     
     if app.startGame:
+        app.sound.playLevelScreenSound()
         #print(len(app.map.obstacleList), len(app.map.platformList), len(app.map.terrainList))
 
         #condition for generating terrain is different
@@ -180,6 +186,7 @@ def takeStep(app):
 
         ifFinished = app.map.checkIfFinishLinePassed(app.player)
         if ifFinished:
+            app.sound.pauseLevelScreenSound()
             app.gameOver = True
             app.paused = True
             app.endTime = time.time()
@@ -205,7 +212,7 @@ def loadLevels(app):
         app.levels.append(Level(difficulty))
 
 def loadSound(app):
-    app.sound = Sound()
+    app.sound = GameSound()
 
 
 
