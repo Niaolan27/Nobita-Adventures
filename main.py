@@ -122,9 +122,13 @@ def onKeyPress(app, key):
                 if app.player.isJumping == False:
                     app.player.isJumping = True
                     app.player.vy = -20 #give player a boost upwards
+                    app.sound.playJumpSound()
                 elif not app.player.isDoubleJumping:
                     app.player.isDoubleJumping = True
                     app.player.vy = -20
+                    app.sound.playJumpSound()
+            
+        
         if key == 's':
             takeStep(app)
     

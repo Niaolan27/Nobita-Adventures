@@ -24,7 +24,7 @@ class GameSound:
         # Get local file URL
         url = pathlib.Path(absolutePath).as_uri()
         # Load Sound file from local URL
-        print(url)
+        #print(url)
         return Sound(url)
 
     def playJumpSound(self):
