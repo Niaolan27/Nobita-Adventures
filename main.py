@@ -103,14 +103,14 @@ def onKeyPress(app, key):
                 app.startGame = True
                 app.levelSelected = app.levels[app.levelSelectedIndex]
                 app.sound.pauseStartingScreenSound()
+                app.sound.playLevelScreenSound()
                 
-        if app.startGame:
-            #start laoding gameplay
-            app.map = Map(app, canvas = (app.width,app.height))
-            #create the game player
-            app.player = Player(app)
-            app.startTime = time.time()
-            app.sound.playLevelScreenSound()
+                #start laoding gameplay
+                app.map = Map(app, canvas = (app.width,app.height))
+                #create the game player
+                app.player = Player(app)
+                app.startTime = time.time()
+            
 
     #for game play
     if app.startGame and not app.gameOver:
@@ -134,6 +134,8 @@ def onKeyPress(app, key):
     
     # if app.gameOver:
     if key == 'r':
+            app.sound.pauseLevelScreenSound()
+            app.sound.playStartingScreenSound()
             startGame(app)
     
 
@@ -145,7 +147,7 @@ def onStep(app):
 def takeStep(app):
     
     if app.startGame:
-        app.sound.playLevelScreenSound()
+        #app.sound.playLevelScreenSound()
         #print(len(app.map.obstacleList), len(app.map.platformList), len(app.map.terrainList))
 
         #condition for generating terrain is different

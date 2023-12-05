@@ -32,7 +32,7 @@ class GameSound:
         return
 
     def playSplashScreenSound(self):
-        self.splashScreenSound.play(restart = False)
+        self.splashScreenSound.play(restart = True)
         return
 
     def pauseSplashScreenSound(self):
@@ -40,7 +40,7 @@ class GameSound:
         return
     
     def playStartingScreenSound(self):
-        self.startScreenSound.play(restart = False)
+        self.startScreenSound.play(restart = True)
         return
     
     def pauseStartingScreenSound(self):
@@ -48,7 +48,7 @@ class GameSound:
         return
 
     def playLevelScreenSound(self):
-        self.levelScreenSound.play(restart = False)
+        self.levelScreenSound.play(restart = True)
         return
     
     def pauseLevelScreenSound(self):
