@@ -17,7 +17,7 @@ def calculateStars(distance, speed, timeTaken):
         return 'failed'
     
 class Level:
-    easyBackground = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/backgrounds/easyBackground.png')
+    easyBackground = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/backgrounds/nope2.png')
     mediumBackground = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/backgrounds/mediumBackground.png')
     hardBackground = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/backgrounds/hardBackground.png')
     obstacleClassProb = {'easy': [0.95, 0.05],
@@ -26,6 +26,9 @@ class Level:
     platformClassProb = {'easy': [0.95, 0.05],
                          'medium': [0.95, 0.05],
                          'hard': [0.95, 0.05]}
+    powerUpClassProb = {'easy': [0.99, 0.01],
+                        'medium': [0.99, 0.01],
+                        'hard': [0.99, 0.01]}
     def __init__(self, difficulty):
         self.difficulty = difficulty
         if difficulty == 'easy':
@@ -36,6 +39,7 @@ class Level:
             self.background = Level.hardBackground
         self.obstacleProbability = Level.obstacleClassProb[difficulty]
         self.platformProbability = Level.platformClassProb[difficulty]
+        self.powerUpProbability = Level.powerUpClassProb[difficulty]
 
 
 

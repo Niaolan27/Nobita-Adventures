@@ -10,8 +10,6 @@ from soundHandling import *
 import time
 import random
 
-
-
 def onAppStart(app):
     app.seed = 2
     app.levelsAvailable = {'easy'}
@@ -57,10 +55,12 @@ def redrawAll(app):
         app.screen.drawStartScreen(app)
         
     if app.startGame:
+        app.map.drawBackground(app) #TODO
         obstacles = app.map.obstacleList
         platforms = app.map.platformList
         terrains = app.map.terrainList
-        app.map.drawBackground(app) #TODO
+        powerUps = app.map.powerUpList
+        
         if not app.player.dead:
             if app.stepCounter // app.player.cadence % 2 == 0:
                 app.player.drawPlayer(0)
@@ -78,6 +78,9 @@ def redrawAll(app):
             obstacle.drawObstacle()
         for platform in platforms: #draws each platform
             platform.drawPlatform()
+        for powerUp in powerUps:
+            powerUp.drawPowerUp()
+            #print('drawing powerup')
         app.map.finishLine.draw()
 
     if app.gameOver:
@@ -147,6 +150,7 @@ def onStep(app):
 def takeStep(app):
     
     if app.startGame:
+        #print(f'player speed {app.player.vx}')
         #app.sound.playLevelScreenSound()
         #print(len(app.map.obstacleList), len(app.map.platformList), len(app.map.terrainList))
 
@@ -168,6 +172,11 @@ def takeStep(app):
         platformBool = random.choices(platformType, weights = platformProb)[0]
         if platformBool:
             app.map.createPlatform(app)
+        powerUpProb = app.levelSelected.powerUpProbability
+        powerUpType = [False, True]
+        powerUpBool = random.choices(powerUpType, weights = powerUpProb)[0]
+        if powerUpBool:
+            app.map.createPowerUp(app)
 
         #create finish line if needed
         #print(app.map.totalDistance, app.finishDistance)
@@ -182,12 +191,16 @@ def takeStep(app):
         obstacles = app.map.obstacleList
         platforms = app.map.platformList
         terrains = app.map.terrainList
+        powerUps = app.map.powerUpList
+        #print(f'player vx in main {app.player.vx}')
         for obstacle in obstacles:
             obstacle.updateXCoord(-app.player.vx)
         for platform in platforms:
             platform.updateXCoord(-app.player.vx)
         for terrain in terrains:
             terrain.updateXCoord(-app.player.vx)
+        for powerUp in powerUps:
+            powerUp.updateXCoord(-app.player.vx)
         app.map.finishLine.updateXCoord(-app.player.vx)
 
         ifFinished = app.map.checkIfFinishLinePassed(app.player)
