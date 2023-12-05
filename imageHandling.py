@@ -14,7 +14,7 @@ def getCMUImage(fileName):
      return image
 
 def getCMUImageFlipped(fileName):
-     print('image loading')
+     #print('image loading')
      url = fileName
      image = openImage(url)
      image = image.transpose(Image.FLIP_LEFT_RIGHT)

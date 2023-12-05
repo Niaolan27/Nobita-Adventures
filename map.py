@@ -5,6 +5,7 @@ from terrain import *
 from player import *
 from level import *
 from imageHandling import *
+from powerup import *
 from PIL import Image
 import random
 import os, pathlib
@@ -18,6 +19,7 @@ class Map:
         self.terrainList = []
         self.obstacleList = []
         self.platformList = []
+        self.powerUpList = []
         self.finishDistance = 7000
         self.background = app.levelSelected.background
         self.createMap(app)
@@ -77,6 +79,15 @@ class Map:
         self.terrainList.append(terrain)
         #print(len(self.terrainList))
         #self.totalDistance += terrain.width
+
+    def createPowerUp(self, app, start=False):
+        xCoord = self.canvas.canvasWidth
+        yCoord = self.findTerrainHeight(xCoord)
+        powerUp = PowerUp(map = self, xCoord = self.canvas.canvasWidth, yCoord = yCoord)
+        if self.checkLegalPowerUp(powerUp):
+            self.powerUpList.append(powerUp)
+        #print(len(self.terrainList))
+        #self.totalDistance += terrain.width
     
     def createFinishLine(self, app):
         self.finishLine = FinishLine(app, self.finishDistance, 50)
@@ -114,12 +125,18 @@ class Map:
     def checkLegalObstacle(self, obstacle): #check if a piece legal
         minDistFromObstacle = 100
         minDistFromTerrain = 100
+        minDistFromPowerUp = 100
         #check if it is far enough from other obstacles
         otherObstacles = self.obstacleList
         for otherObstacle in otherObstacles:
             #other obstacles will definitely be before this 
             #print('checking obstacle distance')
             if obstacle.obstacle.xCoord - otherObstacle.obstacle.xCoord - otherObstacle.obstacle.width < minDistFromObstacle:
+                return False
+        
+        powerUps = self.powerUpList
+        for powerUp in powerUps:
+            if obstacle.obstacle.xCoord - powerUp.xCoord - powerUp.getWidthPixel(powerUp.width, PowerUp.width) < minDistFromPowerUp:
                 return False
     
         #check if it is far enough from terrain 
@@ -136,9 +153,39 @@ class Map:
             pass
         return True
     
+    def checkLegalPowerUp(self, powerUp):
+        minDistFromObstacle = 100
+        minDistFromTerrain = 100
+        minDistFromPowerUp = 100
+        #check if it is far enough from other obstacles
+        otherObstacles = self.obstacleList
+        for otherObstacle in otherObstacles:
+            #other obstacles will definitely be before this 
+            #print('checking obstacle distance')
+            if powerUp.xCoord - otherObstacle.obstacle.xCoord - otherObstacle.obstacle.width < minDistFromObstacle:
+                return False
+        otherPowerUps = self.powerUpList
+        for otherPowerUp in otherPowerUps:
+            if powerUp.xCoord - otherPowerUp.xCoord - otherPowerUp.getWidthPixel(otherPowerUp.width, PowerUp.width) < minDistFromPowerUp:
+                return False
+        #check if it is far enough from terrain 
+        nearestTerrainIndex = self.findNearestTerrain(powerUp.xCoord)
+
+        #check terrain before
+        try:
+            #print('checking terrain before')
+            terrainBefore = self.terrainList[nearestTerrainIndex-1]
+            distanceFromBefore = powerUp.xCoord - terrainBefore.xCoord - terrainBefore.getWidthPixel(terrainBefore.width, Floor.width)
+            if distanceFromBefore < minDistFromTerrain:
+                return False
+        except IndexError:
+            pass
+        return True
+    
     def checkLegalPlatform(self, platform): #check if a piece legal
         minDistFromPlatform = 100
         minDistFromTerrain = 100
+        minDistFromPowerUp = 100
         #check if it is far enough from other obstacles
         otherPlatforms = self.platformList
         for otherPlatform in otherPlatforms:
@@ -147,7 +194,10 @@ class Map:
 
             if platform.xCoord - otherPlatform.xCoord - otherPlatform.getWidthPixel(otherPlatform.width, Tile.width) < minDistFromPlatform:
                 return False
-            
+        powerUps = self.powerUpList
+        for powerUp in powerUps:
+            if platform.xCoord - powerUp.xCoord - powerUp.getWidthPixel(powerUp.width, PowerUp.width) < minDistFromPowerUp:
+                return False
         nearestTerrainIndex = self.findNearestTerrain(platform.xCoord)
 
         #check terrain before

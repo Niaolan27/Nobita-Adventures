@@ -2,6 +2,7 @@ from cmu_graphics import *
 from terrain import *
 from gamePlatform import *
 from obstacles import *
+from powerup import *
 from PIL import Image
 import os, pathlib
 import time
@@ -31,15 +32,20 @@ class Player:
         self.deadTimer = 0
         self.isJumping = False
         self.isDoubleJumping = False
+        self.boostTimer = 0
         self.cadence = Player.cadence
         self.playerRunImage1 = Player.playerRunImage1
         self.playerRunImage2 = Player.playerRunImage2
 
     def updatePosition(self):
         #take a step and check the legality of the move
+        #print(f'boost timer {self.boostTimer}')
         if self.dead: #if dead, pause for a moment
             self.die()
         else:
+            #print(self.vx)
+            #print(self.boostTimer)
+
             self.y += self.vy
             self.x += Player.speed
             self.vy += self.ay
@@ -49,6 +55,7 @@ class Player:
             ifCollidedWithPlatform, collidedPlatform, platformCollisionDirection = self.checkIfCollidedWithPlatform()
             ifCollidedWithObstacle, collidedObstacle, obstacleCollisionDirection = self.checkIfCollidedWithObstacle()
             ifCollidedWithTerrain, collidedTerrain = self.checkIfCollideWithTerrain()
+            ifCollidedWithPowerUp, collidedPowerUp = self.checkIfCollidedWithPowerUp()
 
             if ifLandedOnTerrain:
                 self.y = heightLanded
@@ -56,14 +63,17 @@ class Player:
                 self.isJumping = False
                 self.isDoubleJumping = False
                 self.stuck = False
+                if self.boostTimer>0:
+                    self.boostTimer += 1
 
             if ifCollidedWithTerrain:
                 #print('collided with terrain')
                 self.x -= Player.speed #undo the step forward
                 self.vx = 0
+                self.boostTimer = 0
                 return
                 
-            if ifCollidedWithPlatform:
+            elif ifCollidedWithPlatform:
                 #print('collided with platform')
                 platformHeight = collidedPlatform.yCoord
                 platformXCoord = collidedPlatform.xCoord
@@ -88,17 +98,20 @@ class Player:
                     self.x -= Player.speed
                     self.y -= self.vy
                     self.vx = 0
+                    self.boostTimer = 0
                     self.vy = Player.climbingSpeed
                     #self.ax = 0.5
                 return
 
-            if ifCollidedWithObstacle:
-                if type(collidedObstacle.obstacle) == Square: 
+            elif ifCollidedWithObstacle:
                 #print('collided with obstacle')
+                if type(collidedObstacle.obstacle) == Square: 
+                
                     if obstacleCollisionDirection == 'front': #TODO
                         #print('collided from front')
                         self.x -= Player.speed
                         self.vx = 0
+                        self.boostTimer
                         self.ax = 0
                     else:
                         #print('collided from top')
@@ -109,6 +122,7 @@ class Player:
                         self.ax = 0
                     return
                 elif type(collidedObstacle.obstacle) == Fire:
+                    #print('fire')
                     self.x -= Player.speed
                     self.die()
                 elif type(collidedObstacle.obstacle) == Glue:
@@ -116,16 +130,26 @@ class Player:
                     #print(self.vx)
                     self.x -=Player.speed
                     self.vx = Player.speed//3
+                    #print('changed speed to 1/3')
                     self.stuck = True
+
+            elif ifCollidedWithPowerUp:
+                #print('collided with power up')
+                self.x -= Player.speed
+                self.vx = 1.5*Player.speed
+                self.boostTimer = 1
                     
             else:
-                self.x-=Player.speed
+                self.x -= Player.speed
+                if 0<self.boostTimer<10:
+                    return
                 self.vx = Player.speed
     
     def die(self):
         #print(self.x)
         if self.deadTimer < 3:
             self.vx = 0
+            self.boostTimer = 0
             self.dead = True
             if self.deadTimer > 0: #don't delay on the first time
                 time.sleep(0.5)
@@ -142,6 +166,8 @@ class Player:
                 platform.updateXCoord(self.map.removeBuffer)
             for terrain in self.map.terrainList:
                 terrain.updateXCoord(self.map.removeBuffer)
+            for powerUp in self.map.powerUpList:
+                powerUp.updateXCoord(self.map.removeBuffer)
             self.map.finishLine.updateXCoord(self.map.removeBuffer)
 
 
@@ -232,6 +258,20 @@ class Player:
                     #         else:
                     #             return True, platform, 'top'
         return False, None, None
+    
+    def checkIfCollidedWithPowerUp(self):
+        if self.map.powerUpList == []: return False, None
+        for powerUp in self.map.powerUpList:
+            if powerUp.xCoord - self.width <= self.x <= powerUp.xCoord+powerUp.width:
+                playerCenterX = self.x + self.width//2
+                playerCenterY = self.y - self.height//2
+                powerUpCenterX = powerUp.xCoord + powerUp.getWidthPixel(powerUp.width, PowerUp.width)//2
+                powerUpCenterY = powerUp.yCoord - powerUp.getHeightPixel(powerUp.height, PowerUp.height)//2
+                if self.intersect(playerCenterX, playerCenterY, self.width, self.height,   
+                                powerUpCenterX, powerUpCenterY, powerUp.getWidthPixel(powerUp.width, PowerUp.width), powerUp.getHeightPixel(powerUp.height, PowerUp.height)): #TODO
+                    return True, powerUp
+                #print('no intersect')
+        return False, None
     
     @staticmethod
     def intersect(x1,y1,w1,h1,x2,y2,w2,h2):
