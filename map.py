@@ -12,9 +12,8 @@ import os, pathlib
 
 class Map:
     def __init__(self, app, canvas = None):
-        #print(canvas[0], canvas[1])
         self.app = app
-        self.removeBuffer = 200
+        self.removeBuffer = 400
         self.canvas = Canvas(canvas[0], canvas[1]) #generate a long canvas -> can change the length of canvas to make game longer or shorter
         self.terrainList = []
         self.obstacleList = []
@@ -58,7 +57,6 @@ class Map:
                 obstacle = Obstacle(map = self, xCoord = xCoord, yCoord = yCoord)
                 if self.checkLegalObstacle(obstacle):
                     self.obstacleList.append(obstacle)
-                #print(self.obstacleList)
             #create obstacles for the starting map
         else:
             #create obstacles to add onto the map -> on the border of the canvas
@@ -77,8 +75,6 @@ class Map:
             #create a terrain to add onto the map
             terrain = Terrain(map = self, xCoord = self.canvas.canvasWidth)
         self.terrainList.append(terrain)
-        #print(len(self.terrainList))
-        #self.totalDistance += terrain.width
 
     def createPowerUp(self, app, start=False):
         xCoord = self.canvas.canvasWidth
@@ -86,19 +82,15 @@ class Map:
         powerUp = PowerUp(map = self, xCoord = self.canvas.canvasWidth, yCoord = yCoord)
         if self.checkLegalPowerUp(powerUp):
             self.powerUpList.append(powerUp)
-        #print(len(self.terrainList))
-        #self.totalDistance += terrain.width
     
     def createFinishLine(self, app):
         self.finishLine = FinishLine(app, self.finishDistance, 50)
-
 
     def removeObstacles(self):
         if self.obstacleList == []: return #non empty 
         firstObstacle = self.obstacleList[0]
         if firstObstacle.obstacle.xCoord + firstObstacle.obstacle.width <= -self.removeBuffer:
             self.obstacleList.pop(0)
-        #print(len(self.obstacleList))
         return
 
     def removePlatforms(self):
@@ -106,7 +98,6 @@ class Map:
         firstPlatform = self.platformList[0]
         if firstPlatform.xCoord + firstPlatform.getWidthPixel(firstPlatform.width, Tile.width) <= -self.removeBuffer: #add some buffer
             self.platformList.pop(0)
-        #print(len(self.platformList))
         return
 
     def removeTerrains(self):
@@ -123,14 +114,14 @@ class Map:
         return None
     
     def checkLegalObstacle(self, obstacle): #check if a piece legal
-        minDistFromObstacle = 100
-        minDistFromTerrain = 100
-        minDistFromPowerUp = 100
+        #does not check for platform; it is fine to have obstacles below platforms
+        minDistFromObstacle = 150
+        minDistFromTerrain = 150
+        minDistFromPowerUp = 150
         #check if it is far enough from other obstacles
         otherObstacles = self.obstacleList
         for otherObstacle in otherObstacles:
             #other obstacles will definitely be before this 
-            #print('checking obstacle distance')
             if obstacle.obstacle.xCoord - otherObstacle.obstacle.xCoord - otherObstacle.obstacle.width < minDistFromObstacle:
                 return False
         
@@ -144,7 +135,6 @@ class Map:
 
         #check terrain before
         try:
-            #print('checking terrain before')
             terrainBefore = self.terrainList[nearestTerrainIndex-1]
             distanceFromBefore = obstacle.obstacle.xCoord - terrainBefore.xCoord - terrainBefore.getWidthPixel(terrainBefore.width, Floor.width)
             if distanceFromBefore < minDistFromTerrain:
@@ -154,14 +144,14 @@ class Map:
         return True
     
     def checkLegalPowerUp(self, powerUp):
-        minDistFromObstacle = 100
-        minDistFromTerrain = 100
-        minDistFromPowerUp = 100
+        #does not check for platform
+        minDistFromObstacle = 150
+        minDistFromTerrain = 150
+        minDistFromPowerUp = 150
         #check if it is far enough from other obstacles
         otherObstacles = self.obstacleList
         for otherObstacle in otherObstacles:
             #other obstacles will definitely be before this 
-            #print('checking obstacle distance')
             if powerUp.xCoord - otherObstacle.obstacle.xCoord - otherObstacle.obstacle.width < minDistFromObstacle:
                 return False
         otherPowerUps = self.powerUpList
@@ -173,7 +163,6 @@ class Map:
 
         #check terrain before
         try:
-            #print('checking terrain before')
             terrainBefore = self.terrainList[nearestTerrainIndex-1]
             distanceFromBefore = powerUp.xCoord - terrainBefore.xCoord - terrainBefore.getWidthPixel(terrainBefore.width, Floor.width)
             if distanceFromBefore < minDistFromTerrain:
@@ -183,15 +172,14 @@ class Map:
         return True
     
     def checkLegalPlatform(self, platform): #check if a piece legal
-        minDistFromPlatform = 100
-        minDistFromTerrain = 100
-        minDistFromPowerUp = 100
+        #does not check with obstacles, it is fine to have platforms on top of obstacles
+        minDistFromPlatform = 150
+        minDistFromTerrain = 150
+        minDistFromPowerUp = 150
         #check if it is far enough from other obstacles
         otherPlatforms = self.platformList
         for otherPlatform in otherPlatforms:
             #other obstacles will definitely be before this 
-            #print('checking obstacle distance')
-
             if platform.xCoord - otherPlatform.xCoord - otherPlatform.getWidthPixel(otherPlatform.width, Tile.width) < minDistFromPlatform:
                 return False
         powerUps = self.powerUpList
@@ -202,8 +190,6 @@ class Map:
 
         #check terrain before
         try:
-            #print('checking terrain before')
-            
             terrainBefore = self.terrainList[nearestTerrainIndex-1]
             
             distanceFromBefore = platform.xCoord - terrainBefore.xCoord - terrainBefore.getWidthPixel(terrainBefore.width, Floor.width)
@@ -221,6 +207,7 @@ class Map:
         return True
     
     def findNearestTerrain(self,xCoord):
+        #finds the terrain at that xCoord
         terrains = self.terrainList
         for terrainIndex in range(len(terrains)):
             if terrains[terrainIndex].xCoord <= xCoord <= terrains[terrainIndex].xCoord + terrains[terrainIndex].getWidthPixel(terrains[terrainIndex].width, Floor.width):
@@ -241,6 +228,7 @@ class Map:
         return nearestIndex
     
     def findNextObstacle(self, xCoord):
+        #finds the obstacle after that xCoord
         obstacles = self.obstacleList
         for obstacleIndex in range(len(obstacles)):
             obstacle = obstacles[obstacleIndex]
@@ -248,6 +236,7 @@ class Map:
                 return obstacle
 
     def findNextPlatform(self, xCoord):
+        #finds the next platform after the xCoord
         platforms = self.platformList
         for platformIndex in range(len(platforms)):
             platform = platforms[platformIndex]
@@ -281,6 +270,5 @@ class FinishLine:
         self.xCoord += step
 
     def draw(self):
-        #drawRect(self.xCoord, self.yCoord, self.width, self.height)
         drawLabel('Finish Line', self.xCoord + self.width//2, 50, align = 'center', font = 'DORAEMON', size = 20)
         drawImage(self.image, self.xCoord + self.width//2, 70, width = 20, height = 20, rotateAngle = 90, align = 'center')

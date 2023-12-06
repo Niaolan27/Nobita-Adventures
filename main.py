@@ -72,15 +72,14 @@ def redrawAll(app):
 
 
 
-        for terrain in terrains:
+        for terrain in terrains: #draws each terrain
             terrain.drawTerrain()
         for obstacle in obstacles: #draws each obstacle
             obstacle.drawObstacle()
         for platform in platforms: #draws each platform
             platform.drawPlatform()
-        for powerUp in powerUps:
+        for powerUp in powerUps: #draws each powerup
             powerUp.drawPowerUp()
-            #print('drawing powerup')
         app.map.finishLine.draw()
 
     if app.gameOver:
@@ -150,10 +149,6 @@ def onStep(app):
 def takeStep(app):
     
     if app.startGame:
-        #print(f'player speed {app.player.vx}')
-        #app.sound.playLevelScreenSound()
-        #print(len(app.map.obstacleList), len(app.map.platformList), len(app.map.terrainList))
-
         #condition for generating terrain is different
         #check if there is any terrain at the border of the canvas
         borderYCoord = app.map.findTerrainHeight(app.width + app.player.vx)
@@ -177,9 +172,6 @@ def takeStep(app):
         powerUpBool = random.choices(powerUpType, weights = powerUpProb)[0]
         if powerUpBool:
             app.map.createPowerUp(app)
-
-        #create finish line if needed
-        #print(app.map.totalDistance, app.finishDistance)
         
         #remove platforms, obstacles and terrains which are off the canvas
         app.map.removePlatforms()
@@ -192,7 +184,6 @@ def takeStep(app):
         platforms = app.map.platformList
         terrains = app.map.terrainList
         powerUps = app.map.powerUpList
-        #print(f'player vx in main {app.player.vx}')
         for obstacle in obstacles:
             obstacle.updateXCoord(-app.player.vx)
         for platform in platforms:
@@ -217,9 +208,6 @@ def takeStep(app):
                 currentLevelStars = app.levelStars[app.levels[app.levelSelectedIndex].difficulty]
                 if app.stars > currentLevelStars:
                     app.levelStars[app.levels[app.levelSelectedIndex].difficulty] = app.stars
-    # print(f'player x: {app.player.x}, player y: {app.player.y}')
-    # print(f'player vx: {app.player.vx}, player vy: {app.player.vy}')
-    # print(f'player ax: {app.player.ax}, player ay: {app.player.ay}')
     app.stepCounter += 1
     
 def loadScreen(app):
@@ -253,6 +241,11 @@ if __name__ == '__main__':
 #https://www.spriters-resource.com/mobile/doraemonrepairshop/sheet/162101/
 #https://www.spriters-resource.com/mobile/megarunredfordsadventure/sheet/58884/
 #https://www.spriters-resource.com/mobile/doraemonrepairshop/sheet/161988/
+
+#MUSIC
+#https://www.youtube.com/watch?v=ScRCef7kXGg
+#https://www.youtube.com/watch?v=JldoaiLbes4
+#https://www.youtube.com/watch?v=2bC2b-fFF7E
 
 #CODE RELATED
 #https://www.w3schools.com/python/ref_random_seed.asp

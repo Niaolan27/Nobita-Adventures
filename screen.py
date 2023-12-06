@@ -3,15 +3,6 @@ from cmu_graphics import *
 from imageHandling import *
 from level import *
 
-# def loadStartScreen(app):
-#     app.startScreen = True
-#     #let the player select the level
-#     #for gameLevel in app.levels:
-#     level.drawLevel(app, app.levels[app.levelSelectedIndex]) #TODO
-#     app.level = 1
-#     app.startScreen = False
-#     app.startGame = True
-#     pass
 class Screen:
     image = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/backgrounds/background.png')
     starImage = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/star.png')
@@ -31,7 +22,6 @@ class Screen:
         drawLabel('Press Enter to begin the game', app.width//2, app.height - 30, font = 'DORAEMON', size = 20)
 
     def drawStartScreen(self, app):
-        #background = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/backgrounds/background.png')
         levelSelected = app.levels[app.levelSelectedIndex]
         drawImage(self.image, 0, 0, width = app.width, height = app.height)
         drawRect(app.width//2, app.height//2, app.width//2 + 10, app.height//2 + 10, align = 'center', border = 'black', borderWidth = 10)
@@ -40,7 +30,6 @@ class Screen:
             drawRect(app.width//2, app.height//2, app.width//2, app.height//2, align = 'center', fill = 'white', opacity = 50)
             drawLabel('unlock previous level', app.width//2, app.height//2, align = 'center', font = 'DORAEMON', size = 20)
         else:
-            #print(app.levelStars[levelSelected.difficulty])
             self.drawStars(app.levelStars[levelSelected.difficulty], yCoord = 50)
         drawLabel(f'{levelSelected.difficulty}', app.width//2, app.height-50, align = 'center', font = 'DORAEMON', size = 50)
         drawImage(Screen.leftArrowImage, 70, app.height - 50, width = 30, height = 30, align = 'center')

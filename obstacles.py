@@ -15,7 +15,6 @@ class Square:
 
     def draw(self):
         drawImage(self.image, self.xCoord, self.yCoord-self.height, width = self.width, height = self.height)
-        #drawRect(self.xCoord, self.yCoord - self.height, self.width, self.height, fill = 'red', border='black')
 
 class Fire:
     width = 50
@@ -30,7 +29,6 @@ class Fire:
 
     def draw(self):
         drawImage(self.image, self.xCoord, self.yCoord-self.height, width = self.width, height = self.height)
-        #drawPolygon(self.xCoord, self.yCoord, self.xCoord+self.width//2, self.yCoord-self.height, self.xCoord+self.width, self.yCoord, fill = 'blue', border = 'black') #triangle
 
 class Glue:
     width = 50
@@ -45,7 +43,6 @@ class Glue:
 
     def draw(self):
         drawImage(self.image, self.xCoord, self.yCoord-self.height, width = self.width, height = self.height)
-        #drawPolygon(self.xCoord, self.yCoord, self.xCoord+self.width//2, self.yCoord-self.height, self.xCoord+self.width, self.yCoord, fill = 'blue', border = 'black') #triangle
 
 class Obstacle: #defined by x Coord and obstacle type
     obstacleProb = [0.5, 0.4, 0.1]
@@ -57,7 +54,6 @@ class Obstacle: #defined by x Coord and obstacle type
         
     
     def drawObstacle(self):
-        #print(self.obstacle)
         self.obstacle.draw()
     
     def updateXCoord(self, step):

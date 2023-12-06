@@ -48,4 +48,3 @@ class Tile:
 
     def draw(self):
         drawImage(self.image, self.xCoord, self.yCoord-self.height, width = self.width, height = self.height)
-        #drawRect(self.xCoord, self.yCoord - self.height, self.width, self.height)

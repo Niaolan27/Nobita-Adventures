@@ -2,11 +2,9 @@ from imageHandling import *
 
 def calculateStars(distance, speed, timeTaken):
     perfectTime = distance / speed
-    #print(perfectTime)
     oneStar = perfectTime * 1.8
     twoStar = perfectTime * 1.5
     threeStar = perfectTime *1.2
-    #print(oneStar, twoStar, threeStar)
     if timeTaken < threeStar:
         return 3
     elif timeTaken < twoStar:
@@ -20,12 +18,12 @@ class Level:
     easyBackground = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/backgrounds/nope2.png')
     mediumBackground = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/backgrounds/mediumBackground.png')
     hardBackground = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/backgrounds/hardBackground.png')
-    obstacleClassProb = {'easy': [0.95, 0.05],
-                         'medium': [0.8, 0.2],
+    obstacleClassProb = {'easy': [0.98, 0.02],
+                         'medium': [0.9, 0.1],
                          'hard': [0.6, 0.4]}
-    platformClassProb = {'easy': [0.95, 0.05],
-                         'medium': [0.95, 0.05],
-                         'hard': [0.95, 0.05]}
+    platformClassProb = {'easy': [0.97, 0.03],
+                         'medium': [0.97, 0.03],
+                         'hard': [0.99, 0.01]}
     powerUpClassProb = {'easy': [0.99, 0.01],
                         'medium': [0.99, 0.01],
                         'hard': [0.99, 0.01]}
@@ -40,8 +38,6 @@ class Level:
         self.obstacleProbability = Level.obstacleClassProb[difficulty]
         self.platformProbability = Level.platformClassProb[difficulty]
         self.powerUpProbability = Level.powerUpClassProb[difficulty]
-
-
 
     def drawLevel(app, level):
         if level == app.levelSelected:
