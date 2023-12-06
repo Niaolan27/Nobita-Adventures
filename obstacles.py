@@ -5,7 +5,7 @@ import random
 class Square:
     width = 50
     height = 50
-    image = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/square.png')
+    image = getCMUImage('Images/square.png')
     def __init__(self, xCoord, yCoord):
         self.image = Square.image
         self.width = Square.width
@@ -19,7 +19,7 @@ class Square:
 class Fire:
     width = 50
     height = 10
-    image = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/fire.png')
+    image = getCMUImage('Images/fire.png')
     def __init__(self, xCoord, yCoord):
         self.image = Fire.image
         self.width = Fire.width
@@ -33,7 +33,7 @@ class Fire:
 class Glue:
     width = 50
     height = 10
-    image = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/glue.png')
+    image = getCMUImage('Images/glue.png')
     def __init__(self, xCoord, yCoord):
         self.image = Glue.image
         self.width = Glue.width

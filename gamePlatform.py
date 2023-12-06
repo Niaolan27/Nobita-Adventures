@@ -38,7 +38,7 @@ class GamePlatform:
 class Tile:
     width = 50
     height = 20
-    image = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/platform.png')
+    image = getCMUImage('Images/platform.png')
     def __init__(self, xCoord, yCoord):
         self.image = Tile.image
         self.width = Tile.width

@@ -5,7 +5,7 @@ from obstacles import *
 import math
 
 class Rocket:
-    image = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/rocket.png')
+    image = getCMUImage('Images/rocket.png')
     width = 30
     height = 30
     def __init__(self, map, xCoord, yCoord):

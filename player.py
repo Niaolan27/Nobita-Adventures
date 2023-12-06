@@ -14,9 +14,9 @@ class Player:
     speed = 10
     climbingSpeed = 10
     cadence = 5
-    playerRunImage1 = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/doraemon_run1.png')
-    playerRunImage2 = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/doraemon_run2.png')
-    playerDeadImage = getCMUImage('/users/Jason/CMU/15112/Term Project/Speedrunners/Images/doraemon_dead.png')
+    playerRunImage1 = getCMUImage('Images/doraemon_run1.png')
+    playerRunImage2 = getCMUImage('Images/doraemon_run2.png')
+    playerDeadImage = getCMUImage('Images/doraemon_dead.png')
     def __init__(self, app):
         self.app = app
         self.map = app.map

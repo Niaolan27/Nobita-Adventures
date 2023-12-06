@@ -69,7 +69,7 @@ class Floor: #floor is a building block of terrain
     width = 50
     height = 50
     fill = 'green'
-    image = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/floor.png')
+    image = getCMUImage('Images/floor.png')
     def __init__(self, xCoord, yCoord):
         self.image = Floor.image
         self.xCoord = xCoord

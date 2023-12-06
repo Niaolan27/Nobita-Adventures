@@ -6,7 +6,7 @@ import random
 class PowerUp:
     width = 50
     height = 50
-    image = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/boost.png')
+    image = getCMUImage('Images/boost.png')
     def __init__(self, map = None, xCoord = None, yCoord = None, width = None, height = None):
         self.map = map
         if xCoord == None: raise ValueError('xCoord not specified')

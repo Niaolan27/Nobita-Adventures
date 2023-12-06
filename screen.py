@@ -4,11 +4,11 @@ from imageHandling import *
 from level import *
 
 class Screen:
-    image = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/backgrounds/background.png')
-    starImage = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/star.png')
-    splashScreenImage = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/backgrounds/splash.png')
-    rightArrowImage = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/arrow.png')
-    leftArrowImage = getCMUImageFlipped('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/arrow.png')
+    image = getCMUImage('Images/backgrounds/background.png')
+    starImage = getCMUImage('Images/star.png')
+    splashScreenImage = getCMUImage('Images/backgrounds/splash.png')
+    rightArrowImage = getCMUImage('Images/arrow.png')
+    leftArrowImage = getCMUImageFlipped('Images/arrow.png')
     
     def __init__(self, app):
         self.image = Screen.image

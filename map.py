@@ -286,7 +286,7 @@ class Canvas:
         self.canvasHeight = canvasHeight
 
 class FinishLine:
-    image = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/arrow.png')
+    image = getCMUImage('Images/arrow.png')
     def __init__(self, app, xCoord, yCoord):
         self.xCoord = xCoord
         self.yCoord = yCoord

@@ -15,9 +15,9 @@ def calculateStars(distance, speed, timeTaken):
         return 'failed'
     
 class Level:
-    easyBackground = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/backgrounds/nope2.png')
-    mediumBackground = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/backgrounds/mediumBackground.png')
-    hardBackground = getCMUImage('/Users/Jason/CMU/15112/Term Project/Speedrunners/Images/backgrounds/hardBackground.png')
+    easyBackground = getCMUImage('Images/backgrounds/nope2.png')
+    mediumBackground = getCMUImage('Images/backgrounds/mediumBackground.png')
+    hardBackground = getCMUImage('Images/backgrounds/hardBackground.png')
     obstacleClassProb = {'easy': [0.98, 0.02],
                          'medium': [0.9, 0.1],
                          'hard': [0.6, 0.4]}
