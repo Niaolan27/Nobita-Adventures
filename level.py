@@ -27,6 +27,9 @@ class Level:
     powerUpClassProb = {'easy': [0.99, 0.01],
                         'medium': [0.99, 0.01],
                         'hard': [0.99, 0.01]}
+    rocketClassProb = {'easy': [0.9, 0.1],
+                       'medium': [0.99, 0.01],
+                        'hard': [0.99, 0.01]}
     def __init__(self, difficulty):
         self.difficulty = difficulty
         if difficulty == 'easy':
@@ -38,6 +41,7 @@ class Level:
         self.obstacleProbability = Level.obstacleClassProb[difficulty]
         self.platformProbability = Level.platformClassProb[difficulty]
         self.powerUpProbability = Level.powerUpClassProb[difficulty]
+        self.rocketProbability = Level.rocketClassProb[difficulty]
 
     def drawLevel(app, level):
         if level == app.levelSelected:

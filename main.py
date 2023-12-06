@@ -60,6 +60,7 @@ def redrawAll(app):
         platforms = app.map.platformList
         terrains = app.map.terrainList
         powerUps = app.map.powerUpList
+        rockets = app.map.rocketList
         
         if not app.player.dead:
             if app.stepCounter // app.player.cadence % 2 == 0:
@@ -80,6 +81,8 @@ def redrawAll(app):
             platform.drawPlatform()
         for powerUp in powerUps: #draws each powerup
             powerUp.drawPowerUp()
+        for rocket in rockets:
+            rocket.drawRocket()
         app.map.finishLine.draw()
 
     if app.gameOver:
@@ -98,6 +101,7 @@ def onKeyPress(app, key):
                 app.levelSelectedIndex += 1
         elif key == 'left':
             if app.levelSelectedIndex > 0:
+
                 app.levelSelectedIndex -= 1
         elif key == 'enter':
             if app.levels[app.levelSelectedIndex].difficulty in app.levelsAvailable:
@@ -166,17 +170,29 @@ def takeStep(app):
         platformType = [False, True]
         platformBool = random.choices(platformType, weights = platformProb)[0]
         if platformBool:
+
             app.map.createPlatform(app)
         powerUpProb = app.levelSelected.powerUpProbability
         powerUpType = [False, True]
         powerUpBool = random.choices(powerUpType, weights = powerUpProb)[0]
         if powerUpBool:
             app.map.createPowerUp(app)
+
+
+        #randomly generate a rocket
+        rocketProb = app.levelSelected.rocketProbability #TODO to add to level class
+        rocketType = [False, True]
+        rocketBool = random.choices(rocketType, weights = rocketProb)[0]
+        if rocketBool:
+            if app.map.rocketList ==[]:
+                app.map.createRocket(app) #TODO to add method to map class
         
         #remove platforms, obstacles and terrains which are off the canvas
         app.map.removePlatforms()
         app.map.removeObstacles()
         app.map.removeTerrains()
+        app.map.removePowerUps() #TODO
+        app.map.removeRockets() #TODO 
         
         #update positions
         app.player.updatePosition()
@@ -184,14 +200,22 @@ def takeStep(app):
         platforms = app.map.platformList
         terrains = app.map.terrainList
         powerUps = app.map.powerUpList
+        rockets = app.map.rocketList
         for obstacle in obstacles:
             obstacle.updateXCoord(-app.player.vx)
+
         for platform in platforms:
             platform.updateXCoord(-app.player.vx)
         for terrain in terrains:
             terrain.updateXCoord(-app.player.vx)
         for powerUp in powerUps:
             powerUp.updateXCoord(-app.player.vx)
+        for rocket in rockets:
+            #print(rocket.angle, rocket.vx, rocket.vy)
+            rocket.updateXCoord(-app.player.vx) #translate the rocket
+            rocket.updateAngleAndVelocity(app.player.x, app.player.y)
+            rocket.updatePosition() #the rocket has to move
+            rocket.checkCollision() #check if the rocket has hit any obstacles
         app.map.finishLine.updateXCoord(-app.player.vx)
 
         ifFinished = app.map.checkIfFinishLinePassed(app.player)
@@ -241,6 +265,7 @@ if __name__ == '__main__':
 #https://www.spriters-resource.com/mobile/doraemonrepairshop/sheet/162101/
 #https://www.spriters-resource.com/mobile/megarunredfordsadventure/sheet/58884/
 #https://www.spriters-resource.com/mobile/doraemonrepairshop/sheet/161988/
+#https://www.spriters-resource.com/ds_dsi/kirbymassattack/sheet/94252/
 
 #MUSIC
 #https://www.youtube.com/watch?v=ScRCef7kXGg
@@ -255,3 +280,4 @@ if __name__ == '__main__':
 #CMU Graphics Image Handling Demo from Piazza -> link piazza post
 #https://piazza.com/class/lkq6ivek5cg1bc/post/2147
 #https://www.w3schools.com/python/python_try_except.asp
+#https://www.w3schools.com/python/module_math.asp -> handling trigo for rocket

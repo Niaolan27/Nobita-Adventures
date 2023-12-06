@@ -52,6 +52,7 @@ class Player:
             ifCollidedWithObstacle, collidedObstacle, obstacleCollisionDirection = self.checkIfCollidedWithObstacle()
             ifCollidedWithTerrain, collidedTerrain = self.checkIfCollideWithTerrain()
             ifCollidedWithPowerUp, collidedPowerUp = self.checkIfCollidedWithPowerUp()
+            ifCollidedWithRocket, collidedRocket = self.checkIfCollidedWithRocket()
 
             if ifLandedOnTerrain:
                 self.y = heightLanded
@@ -66,6 +67,12 @@ class Player:
                 self.x -= Player.speed #undo the step forward
                 self.vx = 0
                 self.boostTimer = 0
+                return
+            
+            if ifCollidedWithRocket:
+                self.app.map.removeRockets(rocket = collidedRocket)
+                self.x -= Player.speed
+                self.die()
                 return
                 
             elif ifCollidedWithPlatform:
@@ -126,6 +133,8 @@ class Player:
                 if 0<self.boostTimer<10:
                     return
                 self.vx = Player.speed
+
+        
     
     def die(self):
         if self.deadTimer < 3:
@@ -227,6 +236,19 @@ class Player:
                                 powerUpCenterX, powerUpCenterY, powerUp.getWidthPixel(powerUp.width, PowerUp.width), powerUp.getHeightPixel(powerUp.height, PowerUp.height)): #TODO
                     return True, powerUp
         return False, None
+    
+    def checkIfCollidedWithRocket(self):
+        if self.map.rocketList == []: return False, None
+        for rocket in self.map.rocketList:
+            playerCenterX = self.x + self.width//2
+            playerCenterY = self.y - self.height//2
+            rocketCenterX = rocket.xCoord + rocket.width//2
+            rocketCenterY = rocket.yCoord - rocket.height//2
+            if self.intersect(playerCenterX, playerCenterY, self.width, self.height,   
+                                rocketCenterX, rocketCenterY, rocket.width, rocket.height):
+                return True, rocket
+        return False, None
+            
     
     @staticmethod
     def intersect(x1,y1,w1,h1,x2,y2,w2,h2):

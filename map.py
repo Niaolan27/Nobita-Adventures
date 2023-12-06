@@ -6,6 +6,7 @@ from player import *
 from level import *
 from imageHandling import *
 from powerup import *
+from rocket import *
 from PIL import Image
 import random
 import os, pathlib
@@ -19,6 +20,7 @@ class Map:
         self.obstacleList = []
         self.platformList = []
         self.powerUpList = []
+        self.rocketList = []
         self.finishDistance = 7000
         self.background = app.levelSelected.background
         self.createMap(app)
@@ -86,6 +88,13 @@ class Map:
     def createFinishLine(self, app):
         self.finishLine = FinishLine(app, self.finishDistance, 50)
 
+    def createRocket(self, app):
+        xCoord = self.canvas.canvasWidth
+        yCoord = 50 #arbitrary height
+        rocket = Rocket(map = self, xCoord = xCoord, yCoord = yCoord)
+        self.rocketList.append(rocket)
+
+
     def removeObstacles(self):
         if self.obstacleList == []: return #non empty 
         firstObstacle = self.obstacleList[0]
@@ -106,6 +115,25 @@ class Map:
         if firstTerrain.xCoord + firstTerrain.getWidthPixel(firstTerrain.width, Floor.width) <= -self.removeBuffer:
             self.terrainList.pop(0)
         return
+    
+    def removePowerUps(self):
+        if self.powerUpList == []: return #non empty
+        firstPowerUp = self.powerUpList[0]
+        if firstPowerUp.xCoord + firstPowerUp.getWidthPixel(firstPowerUp.width, PowerUp.width) <= -self.removeBuffer:
+            self.powerUpList.pop(0)
+        return
+    
+    def removeRockets(self, rocket = None):
+        if rocket != None:
+            try:
+                self.rocketList.remove(rocket) #if a rocket is specified
+            except ValueError:
+                pass
+        else:
+            if self.rocketList == []: return
+            firstRocket = self.rocketList[0]
+            if firstRocket.xCoord + firstRocket.width <= 0: #the moment the rocket disappears, pop it
+                self.rocketList.pop(0)
 
     def findTerrainHeight(self, xCoord):
         for terrain in self.terrainList:
